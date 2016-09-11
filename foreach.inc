@@ -168,7 +168,7 @@ Iterators:
 \*----------------------------------------------------------------------------*/
 
 #if !defined _samp_included
-	#error "Please include a_samp or a_npc before foreach"
+	#error Please include a_samp or a_npc before foreach
 #endif
 
 #if defined _foreach_included
@@ -180,7 +180,7 @@ Iterators:
 #define _FOREACH_LOCAL_VERSION 19
 
 /*----------------------------------------------------------------------------*\
-
+	Base defines
 \*----------------------------------------------------------------------------*/
 
 #define ITER_NONE -1
@@ -367,7 +367,7 @@ native Iter_Clear(IteratorArray:Name[]<>);
 #define Iter_Clear(%1) Iter_ClearInternal(_Y_ITER_ARRAY:%1@YSII_Cg,_Y_ITER_ARRAY:%1@YSII_Ag,_Y_ITER_ARRAY_SIZE(%1))
 
 /*----------------------------------------------------------------------------*\
-Create the internal iterators.
+	Create the internal iterators.
 \*----------------------------------------------------------------------------*/
 
 new
@@ -612,7 +612,7 @@ public OnPlayerDisconnect(playerid, reason)
 {
 	#if defined Iter_OnPlayerDisconnect
 		Iter_OnPlayerDisconnect(playerid, reason);
-	#else
+	#endif
 
 	SetTimerEx("Iter_OPDCInternal", 0, false, "i", playerid);
 	return 1;
