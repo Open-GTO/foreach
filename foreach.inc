@@ -374,8 +374,8 @@ new
 	Iterator:Player<MAX_PLAYERS>,
 	Iterator:Bot<MAX_PLAYERS>,
 	Iterator:Character<MAX_PLAYERS>,
-	Iterator:Vehicle<MAX_PLAYERS>,
-	Iterator:Actor<MAX_PLAYERS>;
+	Iterator:Vehicle<MAX_VEHICLES>,
+	Iterator:Actor<MAX_ACTORS>;
 
 #define NPC@YSII_Cg Bot@YSII_Cg
 #define NPC@YSII_Ag Bot@YSII_Ag
