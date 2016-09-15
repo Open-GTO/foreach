@@ -198,6 +198,13 @@ Iterators:
 
 forward Iter_OPDCInternal(playerid);
 
+#if defined FOREACH_MULTISCRIPT
+forward Iter_AddVehicle(vehicleid);
+forward Iter_RemoveVehicle(vehicleid);
+forward Iter_AddActor(actorid);
+forward Iter_RemoveActor(actorid);
+#endif
+
 /*
 --------------------------------------------------------------------------------
 Array:
@@ -455,6 +462,8 @@ Notes:
 --------------------------------------------------------------------------------
 */
 
+#if defined FILTERSCRIPT
+
 public OnFilterScriptInit()
 {
 	// Player
@@ -504,6 +513,8 @@ public OnFilterScriptInit()
 #define OnFilterScriptInit Iter_OnFilterScriptInit
 #if defined Iter_OnFilterScriptInit
 	forward Iter_OnFilterScriptInit();
+#endif
+
 #endif
 
 /*
@@ -665,7 +676,7 @@ Params:
 Return:
 	-
 Notes:
-	---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 */
 
 stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
@@ -673,7 +684,11 @@ stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1
 	new
 		ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, addsiren);
 	if (ret != INVALID_VEHICLE_ID) {
+	#if defined FOREACH_MULTISCRIPT
+		CallRemoteFunction("Iter_AddVehicle", "i", ret);
+	#else
 		Iter_Add(Vehicle, ret);
+	#endif
 	}
 	return ret;
 }
@@ -694,7 +709,7 @@ Params:
 Return:
 	-
 Notes:
-	---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 */
 
 stock Iter_AddStaticVehicle(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2)
@@ -702,7 +717,11 @@ stock Iter_AddStaticVehicle(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z
 	new
 		ret = AddStaticVehicle(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2);
 	if (ret != INVALID_VEHICLE_ID) {
+	#if defined FOREACH_MULTISCRIPT
+		CallRemoteFunction("Iter_AddVehicle", "i", ret);
+	#else
 		Iter_Add(Vehicle, ret);
+	#endif
 	}
 	return ret;
 }
@@ -723,7 +742,7 @@ Params:
 Return:
 	-
 Notes:
-	---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 */
 
 stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
@@ -731,7 +750,11 @@ stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn
 	new
 		ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, addsiren);
 	if (ret != INVALID_VEHICLE_ID) {
+	#if defined FOREACH_MULTISCRIPT
+		CallRemoteFunction("Iter_AddVehicle", "i", ret);
+	#else
 		Iter_Add(Vehicle, ret);
+	#endif
 	}
 	return ret;
 }
@@ -752,12 +775,16 @@ Params:
 Return:
 	-
 Notes:
-	---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 */
 
 stock Iter_DestroyVehicle(vehicleid)
 {
-	Iter_Remove(Vehicle, vehicleid);
+#if defined FOREACH_MULTISCRIPT
+	CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
+#else
+	Iter_Remove(Vehicle, actorid);
+#endif
 	return DestroyVehicle(vehicleid);
 }
 #if defined _ALS_DestroyVehicle
@@ -771,13 +798,55 @@ stock Iter_DestroyVehicle(vehicleid)
 /*
 --------------------------------------------------------------------------------
 Function:
+	Iter_AddVehicle
+Params:
+	-
+Return:
+	-
+Notes:
+---------------------------------------------------------------------------------
+*/
+
+#if defined FOREACH_MULTISCRIPT
+
+public Iter_AddVehicle(vehicleid)
+{
+	return Iter_Add(Vehicle, vehicleid);
+}
+
+#endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_RemoveVehicle
+Params:
+	-
+Return:
+	-
+Notes:
+---------------------------------------------------------------------------------
+*/
+
+#if defined FOREACH_MULTISCRIPT
+
+public Iter_RemoveVehicle(vehicleid)
+{
+	return Iter_Remove(Vehicle, vehicleid);
+}
+
+#endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
 	Iter_CreateActor
 Params:
 	-
 Return:
 	-
 Notes:
-	---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 */
 
 stock Iter_CreateActor(modelid, Float:X, Float:Y, Float:Z, Float:Rotation)
@@ -785,7 +854,11 @@ stock Iter_CreateActor(modelid, Float:X, Float:Y, Float:Z, Float:Rotation)
 	new
 		ret = CreateActor(modelid, X, Y, Z, Rotation);
 	if (ret != INVALID_ACTOR_ID) {
+	#if defined FOREACH_MULTISCRIPT
+		CallRemoteFunction("Iter_AddActor", "i", ret);
+	#else
 		Iter_Add(Actor, ret);
+	#endif
 	}
 	return ret;
 }
@@ -806,12 +879,16 @@ Params:
 Return:
 	-
 Notes:
-	---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 */
 
 stock Iter_DestroyActor(actorid)
 {
+#if defined FOREACH_MULTISCRIPT
+	CallRemoteFunction("Iter_RemoveActor", "i", actorid);
+#else
 	Iter_Remove(Actor, actorid);
+#endif
 	return DestroyActor(actorid);
 }
 #if defined _ALS_DestroyActor
@@ -821,6 +898,48 @@ stock Iter_DestroyActor(actorid)
 #endif
 
 #define DestroyActor Iter_DestroyActor
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_AddActor
+Params:
+	-
+Return:
+	-
+Notes:
+---------------------------------------------------------------------------------
+*/
+
+#if defined FOREACH_MULTISCRIPT
+
+public Iter_AddActor(actorid)
+{
+	return Iter_Add(Actor, actorid);
+}
+
+#endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_RemoveActor
+Params:
+	-
+Return:
+	-
+Notes:
+---------------------------------------------------------------------------------
+*/
+
+#if defined FOREACH_MULTISCRIPT
+
+public Iter_RemoveActor(actorid)
+{
+	return Iter_Remove(Actor, actorid);
+}
+
+#endif
 
 /*
 --------------------------------------------------------------------------------
