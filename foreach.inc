@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*\
+/*----------------------------------------------------------------------------
 					===========================
 					 foreach efficient looping
 					===========================
@@ -165,7 +165,8 @@ Iterators:
 	Bot - List of all bots (npcs) connected.
 	NPC - Alias of Bot.
 	Character - All players and bots.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #if !defined _samp_included
 	#error Please include a_samp or a_npc before foreach
@@ -179,9 +180,11 @@ Iterators:
 
 #define _FOREACH_LOCAL_VERSION 19
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 	Base defines
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define ITER_NONE -1
 
@@ -195,26 +198,31 @@ Iterators:
 
 forward Iter_OPDCInternal(playerid);
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Array:
 	IteratorArray
 Notes:
 	Creates a new iterator array start/array pair.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define IteratorArray:%1[%2]<%3> %1@YSII_Cg[%2],%1@YSII_Ag[%2][%3+1]
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Array:
 	Iterator
 Notes:
 	Creates a new iterator start/array pair.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iterator:%1<%2> _Y_ITER_C3:%1@YSII_Cg,%1@YSII_Ag[(%2)+1]={(%2)*2,(%2)*2-1,...}
 #define iterator%0<%1> new Iterator:%0<%1>
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Init
 Params:
@@ -225,13 +233,14 @@ Notes:
 	Wrapper for Iter_InitInternal.
 
 native Iter_Init(IteratorArray:Name[]<>);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Init(%1) \
 	Iter_InitInternal(%1@YSII_Ag,sizeof %1@YSII_Ag,sizeof %1@YSII_Ag[]-1)
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Add
 Params:
@@ -243,12 +252,13 @@ Notes:
 	Wrapper for Iter_AddInternal.
 
 native Iter_Add(Iterator:Name<>, value);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Add(%1,%2) Iter_AddInternal(_Y_ITER_ARRAY:%1@YSII_Cg,_Y_ITER_ARRAY:%1@YSII_Ag,%2,_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Free
 Params:
@@ -259,12 +269,13 @@ Notes:
 	Wrapper for Iter_FreeInternal.
 
 native Iter_Free(Iterator:Name<>);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Free(%1) Iter_FreeInternal(_Y_ITER_ARRAY:%1@YSII_Ag,_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Remove
 Params:
@@ -276,12 +287,13 @@ Notes:
 	Wrapper for Iter_RemoveInternal.
 
 native Iter_Remove(Iterator:Name<>, value);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Remove(%1,%2) Iter_RemoveInternal(_Y_ITER_ARRAY:%1@YSII_Cg,_Y_ITER_ARRAY:%1@YSII_Ag,%2,_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Contains
 Params:
@@ -293,12 +305,13 @@ Notes:
 	Checks if the given value is in the given iterator.
 
 native Iter_Remove(Iterator:Name<>, value);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Contains(%1,%2) Iter_ContainsInternal(_Y_ITER_ARRAY:%1@YSII_Ag,%2,_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_SafeRemove
 Params:
@@ -313,12 +326,13 @@ Notes:
 	Iter_SafeRemove(iter, i, i);
 
 native Iter_SafeRemove(Iterator:Name<>, value, &next);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_SafeRemove(%1,%2,%3) Iter_SafeRemoveInternal(_Y_ITER_ARRAY:%1@YSII_Cg,_Y_ITER_ARRAY:%1@YSII_Ag,%2,%3,_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Random
 Params:
@@ -329,12 +343,13 @@ Notes:
 	Wrapper for Iter_RandomInternal.
 
 native Iter_Random(Iterator:Name<>);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Random(%1) Iter_RandomInternal(_Y_ITER_ARRAY:%1@YSII_Cg,_Y_ITER_ARRAY:%1@YSII_Ag,_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Count
 Params:
@@ -345,12 +360,13 @@ Notes:
 	Returns the number of items in this iterator.
 
 native Iter_Count(Iterator:Name<>);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Count(%1) (_Y_ITER_ARRAY:%1@YSII_Cg)
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Clear
 Params:
@@ -361,14 +377,16 @@ Notes:
 	Wrapper for Iter_ClearInternal.
 
 native Iter_Clear(IteratorArray:Name[]<>);
-
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Clear(%1) Iter_ClearInternal(_Y_ITER_ARRAY:%1@YSII_Cg,_Y_ITER_ARRAY:%1@YSII_Ag,_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 	Create the internal iterators.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 new
 	Iterator:Player<MAX_PLAYERS>,
@@ -380,7 +398,8 @@ new
 #define NPC@YSII_Cg Bot@YSII_Cg
 #define NPC@YSII_Ag Bot@YSII_Ag
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	foreach
 Params:
@@ -393,7 +412,8 @@ Notes:
 	returns the value of the current slot but uses that slot as the next index
 	too. Variables must be in the form @YSII_<gname>S for the start index and
 	@YSII_<gname>A for the data array where <name> is what's entered in data.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define foreach%1(%0) for(new Y_FOREACH_SECOND|||Y_FOREACH_THIRD|||%0|||)
 // This allows us to use "new" multiple times - stripping off ONLY whole words.
@@ -421,7 +441,8 @@ Notes:
 // the failed "new" macro call above.
 #define Y_FOREACH_SECOND|||Y_FOREACH_THIRD|||%1,%2||| %2=_Y_ITER_ARRAY_SIZE(%1);_:(%2=_Y_ITER_ARRAY:%1@YSII_Ag[%2])!=_Y_ITER_ARRAY_SIZE(%1);
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_OnFilterScriptInit
 Params:
@@ -431,7 +452,8 @@ Return:
 Notes:
 	Fixes a bug where callbacks are not detected when "loadfs" is used after the
 	GM has already started. If this is a GM this is just never used called.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 public OnFilterScriptInit()
 {
@@ -484,7 +506,8 @@ public OnFilterScriptInit()
 	forward Iter_OnFilterScriptInit();
 #endif
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_OnGameModeInit
 Params:
@@ -496,7 +519,8 @@ Notes:
 	this hopefully fixes them. The OnGameModeInit code is written to be
 	very fast by utilising the internal array structure instead of the regular
 	Add functions.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 public OnGameModeInit()
 {
@@ -551,7 +575,8 @@ public OnGameModeInit()
 	forward Iter_OnGameModeInit();
 #endif
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_OnPlayerConnect
 Params:
@@ -567,7 +592,8 @@ Notes:
 	same). Adding print statements which reference these variables seem to fix
 	the problem, and I have tried to make sure that the values will never actually
 	get printed.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 public OnPlayerConnect(playerid)
 {
@@ -595,7 +621,8 @@ public OnPlayerConnect(playerid)
 	forward Iter_OnPlayerConnect(playerid);
 #endif
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_OnPlayerDisconnect
 Params:
@@ -606,7 +633,8 @@ Notes:
 	Removes a player from the loop data. No longer uses "hook" to ENSURE that
 	this is always last. Previously I think that the order of evaluation in
 	y_hooks meant that this got called before the user "OnPlayerDisconnect".
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 public OnPlayerDisconnect(playerid, reason)
 {
@@ -628,7 +656,8 @@ public OnPlayerDisconnect(playerid, reason)
 	forward Iter_OnPlayerDisconnect(playerid, reason);
 #endif
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_CreateVehicle
 Params:
@@ -636,8 +665,8 @@ Params:
 Return:
 	-
 Notes:
-	-
-\*----------------------------------------------------------------------------*/
+	---------------------------------------------------------------------------------
+*/
 
 stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
 {
@@ -656,7 +685,8 @@ stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1
 
 #define CreateVehicle Iter_CreateVehicle
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_AddStaticVehicle
 Params:
@@ -664,8 +694,8 @@ Params:
 Return:
 	-
 Notes:
-	-
-\*----------------------------------------------------------------------------*/
+	---------------------------------------------------------------------------------
+*/
 
 stock Iter_AddStaticVehicle(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2)
 {
@@ -684,7 +714,8 @@ stock Iter_AddStaticVehicle(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z
 
 #define AddStaticVehicle Iter_AddStaticVehicle
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_AddStaticVehicleEx
 Params:
@@ -692,8 +723,8 @@ Params:
 Return:
 	-
 Notes:
-	-
-\*----------------------------------------------------------------------------*/
+	---------------------------------------------------------------------------------
+*/
 
 stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
 {
@@ -712,7 +743,8 @@ stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn
 
 #define AddStaticVehicleEx Iter_AddStaticVehicleEx
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_DestroyVehicle
 Params:
@@ -720,8 +752,8 @@ Params:
 Return:
 	-
 Notes:
-	-
-\*----------------------------------------------------------------------------*/
+	---------------------------------------------------------------------------------
+*/
 
 stock Iter_DestroyVehicle(vehicleid)
 {
@@ -736,7 +768,8 @@ stock Iter_DestroyVehicle(vehicleid)
 
 #define DestroyVehicle Iter_DestroyVehicle
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_CreateActor
 Params:
@@ -744,8 +777,8 @@ Params:
 Return:
 	-
 Notes:
-	-
-\*----------------------------------------------------------------------------*/
+	---------------------------------------------------------------------------------
+*/
 
 stock Iter_CreateActor(modelid, Float:X, Float:Y, Float:Z, Float:Rotation)
 {
@@ -764,7 +797,8 @@ stock Iter_CreateActor(modelid, Float:X, Float:Y, Float:Z, Float:Rotation)
 
 #define CreateActor Iter_CreateActor
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_DestroyActor
 Params:
@@ -772,8 +806,8 @@ Params:
 Return:
 	-
 Notes:
-	-
-\*----------------------------------------------------------------------------*/
+	---------------------------------------------------------------------------------
+*/
 
 stock Iter_DestroyActor(actorid)
 {
@@ -788,7 +822,8 @@ stock Iter_DestroyActor(actorid)
 
 #define DestroyActor Iter_DestroyActor
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_OPDCInternal
 Params:
@@ -798,7 +833,8 @@ Return:
 Notes:
 	Called AFTER "OnPlayerDisconnect" so that using "Kick" inside a "foreach"
 	loop does not crash the server due to an OOB error.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 public Iter_OPDCInternal(playerid)
 {
@@ -813,7 +849,8 @@ public Iter_OPDCInternal(playerid)
 	Iter_Remove(Character, playerid);
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_RandomInternal
 Params:
@@ -824,7 +861,8 @@ Return:
 	-
 Notes:
 	Returns a random value from an iterator.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_RandomInternal(count, array[], size)
 {
@@ -843,7 +881,8 @@ stock Iter_RandomInternal(count, array[], size)
 	return ITER_NONE;
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_FreeInternal
 Params:
@@ -857,7 +896,8 @@ Notes:
 	whether a slot is unused or the last one. If you want to use the slot
 	straight after finding it the iterator will need to re-find it to add in
 	the data.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_FreeInternal(array[], size)
 {
@@ -869,7 +909,8 @@ stock Iter_FreeInternal(array[], size)
 	return ITER_NONE;
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_AddInternal
 Params:
@@ -883,7 +924,8 @@ Notes:
 	Adds a value to a given iterator set. Now detects when you try and add the
 	last item multiple times, as well as all the other items. Now simplified even
 	further with the new internal representation.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_AddInternal(&count, array[], value, size)
 {
@@ -903,7 +945,8 @@ stock Iter_AddInternal(&count, array[], value, size)
 	return 0;
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_RemoveInternal
 Params:
@@ -915,7 +958,8 @@ Return:
 	-
 Notes:
 	Removes a value from an iterator.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_RemoveInternal(&count, array[], value, size)
 {
@@ -924,7 +968,8 @@ stock Iter_RemoveInternal(&count, array[], value, size)
 	return Iter_SafeRemoveInternal(count, array, value, last, size);
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_SafeRemoveInternal
 Params:
@@ -937,7 +982,8 @@ Return:
 	-
 Notes:
 	Removes a value from an iterator safely.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_SafeRemoveInternal(&count, array[], value, &last, size)
 {
@@ -957,7 +1003,8 @@ stock Iter_SafeRemoveInternal(&count, array[], value, &last, size)
 	return 0;
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_ContainsInternal
 Params:
@@ -968,14 +1015,16 @@ Return:
 	-
 Notes:
 	Checks if this item is in the iterator.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_ContainsInternal(array[], value, size)
 {
 	return 0 <= value < size && array[value] <= size;
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_ClearInternal
 Params:
@@ -986,7 +1035,8 @@ Return:
 	-
 Notes:
 	Resets an iterator.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_ClearInternal(&count, array[], size)
 {
@@ -997,7 +1047,8 @@ stock Iter_ClearInternal(&count, array[], size)
 	count = 0;
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_InitInternal
 Params:
@@ -1009,7 +1060,8 @@ Return:
 Notes:
 	Multi-dimensional arrays can not be initialised at compile time, so need to be
 	done at run time, which is slightly annoying.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_InitInternal(arr[][], s0, s1)
 {
@@ -1021,7 +1073,8 @@ stock Iter_InitInternal(arr[][], s0, s1)
 	}
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_PrevInternal
 Params:
@@ -1032,7 +1085,8 @@ Return:
 	-
 Notes:
 	Gets the element in an iterator that points to the current element.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 stock Iter_PrevInternal(array[], size, slot)
 {
@@ -1046,7 +1100,8 @@ stock Iter_PrevInternal(array[], size, slot)
 	return size;
 }
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Begin
 Params:
@@ -1055,12 +1110,14 @@ Return:
 	-
 Notes:
 	Gets a point BEFORE the start of the iterator (the theoretical beginning).
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Begin(%1) (_Y_ITER_ARRAY_SIZE(%1))
 #define Iter_Start Iter_Begin
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_End
 Params:
@@ -1069,12 +1126,14 @@ Return:
 	-
 Notes:
 	Gets a point AFTER the end of the iterator (think "MAX_PLAYERS").
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_End(%1) (_Y_ITER_ARRAY_SIZE(%1))
 #define Iter_Finish Iter_End
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_First
 Params:
@@ -1083,11 +1142,13 @@ Return:
 	-
 Notes:
 	Gets the first element in an iterator.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_First(%1) (_Y_ITER_ARRAY:%1@YSII_Ag[_Y_ITER_ARRAY_SIZE(%1)])
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Last
 Params:
@@ -1096,11 +1157,13 @@ Return:
 	-
 Notes:
 	Gets the last element in an iterator.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Last(%1) Iter_PrevInternal(_Y_ITER_ARRAY:%1@YSII_Ag,_Y_ITER_ARRAY_SIZE(%1),_Y_ITER_ARRAY_SIZE(%1))
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Next
 Params:
@@ -1109,11 +1172,13 @@ Return:
 	-
 Notes:
 	Gets the element in an interator after the current one.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Next(%1,%2) (_Y_ITER_ARRAY:%1@YSII_Ag[(%2)])
 
-/*----------------------------------------------------------------------------*\
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_Prev
 Params:
@@ -1122,7 +1187,8 @@ Return:
 	-
 Notes:
 	Gets the element in an iterator before the current one. Slow.
-\*----------------------------------------------------------------------------*/
+--------------------------------------------------------------------------------
+*/
 
 #define Iter_Prev(%1,%2) Iter_PrevInternal(_Y_ITER_ARRAY:%1@YSII_Ag,_Y_ITER_ARRAY_SIZE(%1),(%2))
 #define Iter_Previous Iter_Prev
