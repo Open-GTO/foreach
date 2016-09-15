@@ -783,7 +783,7 @@ stock Iter_DestroyVehicle(vehicleid)
 #if defined FOREACH_MULTISCRIPT
 	CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
 #else
-	Iter_Remove(Vehicle, actorid);
+	Iter_Remove(Vehicle, vehicleid);
 #endif
 	return DestroyVehicle(vehicleid);
 }
