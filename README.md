@@ -38,10 +38,11 @@ If you use foreach in each of your script, just include foreach like this:
 
 # Settings
 
-Directive                | Enabled by default
--------------------------|--------------------
-FOREACH_ACTOR_ITERATOR   | yes
-FOREACH_VEHICLE_ITERATOR | yes
+Directive                      | Enabled by default
+-------------------------------|--------------------
+FOREACH_ACTOR_ITERATOR         | yes
+FOREACH_VEHICLE_ITERATOR       | yes
+FOREACH_PLAYERSSTREAM_ITERATOR | no
 
 How to disable any iterator:
 ```Pawn

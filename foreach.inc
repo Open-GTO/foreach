@@ -206,6 +206,10 @@ forward Iter_OPDCInternal(playerid);
 	#define FOREACH_ACTOR_ITERATOR 1
 #endif
 
+#if !defined FOREACH_PLAYERSSTREAM_ITERATOR
+	#define FOREACH_PLAYERSSTREAM_ITERATOR 0
+#endif
+
 #if defined FOREACH_MULTISCRIPT
 	#if FOREACH_VEHICLE_ITERATOR
 		forward Iter_AddVehicle(vehicleid);
@@ -424,6 +428,10 @@ new
 	new Iterator:Actor<MAX_ACTORS>;
 #endif
 
+#if FOREACH_PLAYERSSTREAM_ITERATOR
+	new Iterator:PlayersStream[MAX_PLAYERS]<MAX_ACTORS>;
+#endif
+
 /*
 --------------------------------------------------------------------------------
 Function:
@@ -521,6 +529,20 @@ public OnFilterScriptInit()
 	}
 #endif
 
+#if FOREACH_PLAYERSSTREAM_ITERATOR
+	// Players Stream
+	Iter_Init(PlayersStream);
+	for (new i = 0; i != MAX_PLAYERS; ++i) {
+		if (IsPlayerConnected(i)) {
+			for (new j = 0; j != MAX_PLAYERS; ++j) {
+				if (IsPlayerStreamedIn(i, j)) {
+					Iter_Add(PlayersStream[i], j);
+				}
+			}
+		}
+	}
+#endif
+
 	#if defined Iter_OnFilterScriptInit
 		return Iter_OnFilterScriptInit();
 	#else
@@ -592,6 +614,20 @@ public OnGameModeInit()
 	for (new i = 0; i != MAX_ACTORS; ++i) {
 		if (IsValidActor(i)) {
 			Iter_Add(Actor, i);
+		}
+	}
+#endif
+
+#if FOREACH_PLAYERSSTREAM_ITERATOR
+	// Players Stream
+	Iter_Init(PlayersStream);
+	for (new i = 0; i != MAX_PLAYERS; ++i) {
+		if (IsPlayerConnected(i)) {
+			for (new j = 0; j != MAX_PLAYERS; ++j) {
+				if (IsPlayerStreamedIn(i, j)) {
+					Iter_Add(PlayersStream[i], j);
+				}
+			}
 		}
 	}
 #endif
@@ -693,6 +729,33 @@ public OnPlayerDisconnect(playerid, reason)
 #if defined Iter_OnPlayerDisconnect
 	forward Iter_OnPlayerDisconnect(playerid, reason);
 #endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_OPDCInternal
+Params:
+	playerid - Player who left.
+Return:
+	-
+Notes:
+	Called AFTER "OnPlayerDisconnect" so that using "Kick" inside a "foreach"
+	loop does not crash the server due to an OOB error.
+--------------------------------------------------------------------------------
+*/
+
+public Iter_OPDCInternal(playerid)
+{
+	if (IsPlayerConnected(playerid)) {
+		return;
+	}
+	if (!IsPlayerNPC(playerid)) {
+		Iter_Remove(Player, playerid);
+	} else {
+		Iter_Remove(Bot, playerid);
+	}
+	Iter_Remove(Character, playerid);
+}
 
 /*
 --------------------------------------------------------------------------------
@@ -1002,30 +1065,89 @@ public Iter_RemoveActor(actorid)
 
 /*
 --------------------------------------------------------------------------------
+	PLAYERS STREAM
+---------------------------------------------------------------------------------
+*/
+
+#if FOREACH_PLAYERSSTREAM_ITERATOR
+
+/*
+--------------------------------------------------------------------------------
 Function:
-	Iter_OPDCInternal
+	Iter_OnPlayerStreamIn
 Params:
-	playerid - Player who left.
+	playerid
+	forplayerid
 Return:
 	-
 Notes:
-	Called AFTER "OnPlayerDisconnect" so that using "Kick" inside a "foreach"
-	loop does not crash the server due to an OOB error.
+	-
 --------------------------------------------------------------------------------
 */
 
-public Iter_OPDCInternal(playerid)
+public OnPlayerStreamIn(playerid, forplayerid)
 {
-	if (IsPlayerConnected(playerid)) {
-		return;
-	}
-	if (!IsPlayerNPC(playerid)) {
-		Iter_Remove(Player, playerid);
-	} else {
-		Iter_Remove(Bot, playerid);
-	}
-	Iter_Remove(Character, playerid);
+	Iter_Add(PlayersStream[playerid], forplayerid);
+
+	#if defined Iter_OnPlayerStreamIn
+		return Iter_OnPlayerStreamIn(playerid, forplayerid);
+	#else
+		return 1;
+	#endif
 }
+#if defined _ALS_OnPlayerStreamIn
+	#undef OnPlayerStreamIn
+#else
+	#define _ALS_OnPlayerStreamIn
+#endif
+
+#define OnPlayerStreamIn Iter_OnPlayerStreamIn
+#if defined Iter_OnPlayerStreamIn
+	forward Iter_OnPlayerStreamIn(playerid, forplayerid);
+#endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_OnPlayerStreamOut
+Params:
+	playerid
+	forplayerid
+Return:
+	-
+Notes:
+	-
+--------------------------------------------------------------------------------
+*/
+
+public OnPlayerStreamOut(playerid, forplayerid)
+{
+	Iter_Remove(PlayersStream[playerid], forplayerid);
+
+	#if defined Iter_OnPlayerStreamOut
+		return Iter_OnPlayerStreamOut(playerid, forplayerid);
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnPlayerStreamOut
+	#undef OnPlayerStreamOut
+#else
+	#define _ALS_OnPlayerStreamOut
+#endif
+
+#define OnPlayerStreamOut Iter_OnPlayerStreamOut
+#if defined Iter_OnPlayerStreamOut
+	forward Iter_OnPlayerStreamOut(playerid, forplayerid);
+#endif
+
+/*
+--------------------------------------------------------------------------------
+	PLAYERS STREAM ENDS
+---------------------------------------------------------------------------------
+*/
+
+#endif
 
 /*
 --------------------------------------------------------------------------------
