@@ -36,6 +36,20 @@ If you use foreach in each of your script, just include foreach like this:
 #include <foreach>
 ```
 
+# Settings
+
+Directive                | Enabled by default
+-------------------------|--------------------
+FOREACH_ACTOR_ITERATOR   | yes
+FOREACH_VEHICLE_ITERATOR | yes
+
+How to disable any iterator:
+```Pawn
+#define FOREACH_ACTOR_ITERATOR 0
+#define FOREACH_VEHICLE_ITERATOR 0
+#include <foreach>
+```
+
 # How to use
 #### Gives $100 to all connected players
 ```Pawn

@@ -205,6 +205,14 @@ forward Iter_AddActor(actorid);
 forward Iter_RemoveActor(actorid);
 #endif
 
+#if !defined FOREACH_VEHICLE_ITERATOR
+	#define FOREACH_VEHICLE_ITERATOR 1
+#endif
+
+#if !defined FOREACH_ACTOR_ITERATOR
+	#define FOREACH_ACTOR_ITERATOR 1
+#endif
+
 /*
 --------------------------------------------------------------------------------
 Array:
@@ -398,12 +406,18 @@ native Iter_Clear(IteratorArray:Name[]<>);
 new
 	Iterator:Player<MAX_PLAYERS>,
 	Iterator:Bot<MAX_PLAYERS>,
-	Iterator:Character<MAX_PLAYERS>,
-	Iterator:Vehicle<MAX_VEHICLES>,
-	Iterator:Actor<MAX_ACTORS>;
+	Iterator:Character<MAX_PLAYERS>;
 
 #define NPC@YSII_Cg Bot@YSII_Cg
 #define NPC@YSII_Ag Bot@YSII_Ag
+
+#if FOREACH_VEHICLE_ITERATOR
+	new Iterator:Vehicle<MAX_VEHICLES>;
+#endif
+
+#if FOREACH_ACTOR_ITERATOR
+	new Iterator:Actor<MAX_ACTORS>;
+#endif
 
 /*
 --------------------------------------------------------------------------------
@@ -482,6 +496,7 @@ public OnFilterScriptInit()
 		}
 	}
 
+#if FOREACH_VEHICLE_ITERATOR
 	// Vehicle
 	Iter_Clear(Vehicle);
 	for (new i = 1; i != MAX_VEHICLES; ++i) {
@@ -489,7 +504,9 @@ public OnFilterScriptInit()
 			Iter_Add(Vehicle, i);
 		}
 	}
+#endif
 
+#if FOREACH_ACTOR_ITERATOR
 	// Actor
 	Iter_Clear(Actor);
 	for (new i = 0; i != MAX_ACTORS; ++i) {
@@ -497,6 +514,7 @@ public OnFilterScriptInit()
 			Iter_Add(Actor, i);
 		}
 	}
+#endif
 
 	#if defined Iter_OnFilterScriptInit
 		return Iter_OnFilterScriptInit();
@@ -553,6 +571,7 @@ public OnGameModeInit()
 		Iter_Add(Character, i);
 	}
 
+#if FOREACH_VEHICLE_ITERATOR
 	// Vehicle
 	Iter_Clear(Vehicle);
 	for (new i = 1; i != MAX_VEHICLES; ++i) {
@@ -560,7 +579,9 @@ public OnGameModeInit()
 			Iter_Add(Vehicle, i);
 		}
 	}
+#endif
 
+#if FOREACH_ACTOR_ITERATOR
 	// Actor
 	Iter_Clear(Actor);
 	for (new i = 0; i != MAX_ACTORS; ++i) {
@@ -568,6 +589,7 @@ public OnGameModeInit()
 			Iter_Add(Actor, i);
 		}
 	}
+#endif
 
 	#if defined Iter_OnGameModeInit
 		return Iter_OnGameModeInit();
@@ -666,6 +688,14 @@ public OnPlayerDisconnect(playerid, reason)
 #if defined Iter_OnPlayerDisconnect
 	forward Iter_OnPlayerDisconnect(playerid, reason);
 #endif
+
+/*
+--------------------------------------------------------------------------------
+	VEHICLES
+---------------------------------------------------------------------------------
+*/
+
+#if FOREACH_VEHICLE_ITERATOR
 
 /*
 --------------------------------------------------------------------------------
@@ -839,6 +869,22 @@ public Iter_RemoveVehicle(vehicleid)
 
 /*
 --------------------------------------------------------------------------------
+	VEHICLES ENDS
+---------------------------------------------------------------------------------
+*/
+
+#endif
+
+/*
+--------------------------------------------------------------------------------
+	ACTORS
+---------------------------------------------------------------------------------
+*/
+
+#if FOREACH_ACTOR_ITERATOR
+
+/*
+--------------------------------------------------------------------------------
 Function:
 	Iter_CreateActor
 Params:
@@ -938,6 +984,14 @@ public Iter_RemoveActor(actorid)
 {
 	return Iter_Remove(Actor, actorid);
 }
+
+#endif
+
+/*
+--------------------------------------------------------------------------------
+	ACTORS ENDS
+---------------------------------------------------------------------------------
+*/
 
 #endif
 
