@@ -198,19 +198,24 @@ Iterators:
 
 forward Iter_OPDCInternal(playerid);
 
-#if defined FOREACH_MULTISCRIPT
-forward Iter_AddVehicle(vehicleid);
-forward Iter_RemoveVehicle(vehicleid);
-forward Iter_AddActor(actorid);
-forward Iter_RemoveActor(actorid);
-#endif
-
 #if !defined FOREACH_VEHICLE_ITERATOR
 	#define FOREACH_VEHICLE_ITERATOR 1
 #endif
 
 #if !defined FOREACH_ACTOR_ITERATOR
 	#define FOREACH_ACTOR_ITERATOR 1
+#endif
+
+#if defined FOREACH_MULTISCRIPT
+	#if FOREACH_VEHICLE_ITERATOR
+		forward Iter_AddVehicle(vehicleid);
+		forward Iter_RemoveVehicle(vehicleid);
+	#endif
+
+	#if FOREACH_ACTOR_ITERATOR
+		forward Iter_AddActor(actorid);
+		forward Iter_RemoveActor(actorid);
+	#endif
 #endif
 
 /*
