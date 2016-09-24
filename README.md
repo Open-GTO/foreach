@@ -38,11 +38,14 @@ If you use foreach in each of your script, just include foreach like this:
 
 # Settings
 
-Directive                      | Enabled by default
--------------------------------|--------------------
-FOREACH_ACTOR_ITERATOR         | yes
-FOREACH_VEHICLE_ITERATOR       | yes
-FOREACH_PLAYERSSTREAM_ITERATOR | no
+Directive | Iterators | Enabled by default
+---|---|---
+FOREACH_CHARACTER_ITERATOR | Player, Bot / NPC, Character | yes
+FOREACH_ACTOR_ITERATOR | Actor | yes
+FOREACH_VEHICLE_ITERATOR | Vehicle | yes
+FOREACH_PLAYERSSTREAM_ITERATOR | PlayersStream[playerid] | no
+FOREACH_VEHICLESSTREAM_ITERATOR | VehiclesStream[playerid] | no
+FOREACH_ACTORSSTREAM_ITERATOR | ActorsStream[playerid] | no
 
 How to disable any iterator:
 ```Pawn

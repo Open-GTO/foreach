@@ -198,6 +198,10 @@ Iterators:
 
 forward Iter_OPDCInternal(playerid);
 
+#if !defined FOREACH_CHARACTER_ITERATOR
+	#define FOREACH_CHARACTER_ITERATOR 1
+#endif
+
 #if !defined FOREACH_VEHICLE_ITERATOR
 	#define FOREACH_VEHICLE_ITERATOR 1
 #endif
@@ -208,6 +212,14 @@ forward Iter_OPDCInternal(playerid);
 
 #if !defined FOREACH_PLAYERSSTREAM_ITERATOR
 	#define FOREACH_PLAYERSSTREAM_ITERATOR 0
+#endif
+
+#if !defined FOREACH_VEHICLESSTREAM_ITERATOR
+	#define FOREACH_VEHICLESSTREAM_ITERATOR 0
+#endif
+
+#if !defined FOREACH_ACTORSSTREAM_ITERATOR
+	#define FOREACH_ACTORSSTREAM_ITERATOR 0
 #endif
 
 #if defined FOREACH_MULTISCRIPT
@@ -412,13 +424,15 @@ native Iter_Clear(IteratorArray:Name[]<>);
 --------------------------------------------------------------------------------
 */
 
-new
-	Iterator:Player<MAX_PLAYERS>,
-	Iterator:Bot<MAX_PLAYERS>,
-	Iterator:Character<MAX_PLAYERS>;
+#if FOREACH_CHARACTER_ITERATOR
+	new
+		Iterator:Player<MAX_PLAYERS>,
+		Iterator:Bot<MAX_PLAYERS>,
+		Iterator:Character<MAX_PLAYERS>;
 
-#define NPC@YSII_Cg Bot@YSII_Cg
-#define NPC@YSII_Ag Bot@YSII_Ag
+	#define NPC@YSII_Cg Bot@YSII_Cg
+	#define NPC@YSII_Ag Bot@YSII_Ag
+#endif
 
 #if FOREACH_VEHICLE_ITERATOR
 	new Iterator:Vehicle<MAX_VEHICLES>;
@@ -429,7 +443,15 @@ new
 #endif
 
 #if FOREACH_PLAYERSSTREAM_ITERATOR
-	new Iterator:PlayersStream[MAX_PLAYERS]<MAX_ACTORS>;
+	new Iterator:PlayersStream[MAX_PLAYERS]<MAX_PLAYERS>;
+#endif
+
+#if FOREACH_VEHICLESSTREAM_ITERATOR
+	new Iterator:VehiclesStream[MAX_PLAYERS]<MAX_VEHICLES>;
+#endif
+
+#if FOREACH_ACTORSSTREAM_ITERATOR
+	new Iterator:ActorsStream[MAX_PLAYERS]<MAX_ACTORS>;
 #endif
 
 /*
@@ -493,55 +515,7 @@ Notes:
 
 public OnFilterScriptInit()
 {
-	// Player
-	Iter_Clear(Player);
-	Iter_Clear(Bot);
-	Iter_Clear(Character);
-
-	for (new i = 0; i != MAX_PLAYERS; ++i) {
-		if (IsPlayerConnected(i)) {
-			if (!IsPlayerNPC(i)) {
-				Iter_Add(Player, i);
-			} else {
-				Iter_Add(Bot, i);
-			}
-			Iter_Add(Character, i);
-		}
-	}
-
-#if FOREACH_VEHICLE_ITERATOR
-	// Vehicle
-	Iter_Clear(Vehicle);
-	for (new i = 1; i != MAX_VEHICLES; ++i) {
-		if (GetVehicleModel(i)) {
-			Iter_Add(Vehicle, i);
-		}
-	}
-#endif
-
-#if FOREACH_ACTOR_ITERATOR
-	// Actor
-	Iter_Clear(Actor);
-	for (new i = 0; i != MAX_ACTORS; ++i) {
-		if (IsValidActor(i)) {
-			Iter_Add(Actor, i);
-		}
-	}
-#endif
-
-#if FOREACH_PLAYERSSTREAM_ITERATOR
-	// Players Stream
-	Iter_Init(PlayersStream);
-	for (new i = 0; i != MAX_PLAYERS; ++i) {
-		if (IsPlayerConnected(i)) {
-			for (new j = 0; j != MAX_PLAYERS; ++j) {
-				if (IsPlayerStreamedIn(i, j)) {
-					Iter_Add(PlayersStream[i], j);
-				}
-			}
-		}
-	}
-#endif
+	OnGameModeInit();
 
 	#if defined Iter_OnFilterScriptInit
 		return Iter_OnFilterScriptInit();
@@ -580,6 +554,7 @@ Notes:
 
 public OnGameModeInit()
 {
+#if FOREACH_CHARACTER_ITERATOR
 	// Player
 	Iter_Clear(Player);
 	Iter_Clear(Bot);
@@ -597,6 +572,7 @@ public OnGameModeInit()
 		}
 		Iter_Add(Character, i);
 	}
+#endif
 
 #if FOREACH_VEHICLE_ITERATOR
 	// Vehicle
@@ -632,6 +608,34 @@ public OnGameModeInit()
 	}
 #endif
 
+#if FOREACH_VEHICLESSTREAM_ITERATOR
+	// Vehicles Stream
+	Iter_Init(VehiclesStream);
+	for (new i = 0; i != MAX_PLAYERS; ++i) {
+		if (IsPlayerConnected(i)) {
+			for (new j = 1; j != MAX_VEHICLES; ++j) {
+				if (IsVehicleStreamedIn(j, i)) {
+					Iter_Add(VehiclesStream[i], j);
+				}
+			}
+		}
+	}
+#endif
+
+#if FOREACH_ACTORSSTREAM_ITERATOR
+	// Actors Stream
+	Iter_Init(ActorsStream);
+	for (new i = 0; i != MAX_PLAYERS; ++i) {
+		if (IsPlayerConnected(i)) {
+			for (new j = 0; j != MAX_ACTORS; ++j) {
+				if (IsActorStreamedIn(j, i)) {
+					Iter_Add(ActorsStream[i], j);
+				}
+			}
+		}
+	}
+#endif
+
 	#if defined Iter_OnGameModeInit
 		return Iter_OnGameModeInit();
 	#else
@@ -648,6 +652,14 @@ public OnGameModeInit()
 #if defined Iter_OnGameModeInit
 	forward Iter_OnGameModeInit();
 #endif
+
+/*
+--------------------------------------------------------------------------------
+	PLAYERS
+---------------------------------------------------------------------------------
+*/
+
+#if FOREACH_PLAYER_ITERATOR
 
 /*
 --------------------------------------------------------------------------------
@@ -756,6 +768,14 @@ public Iter_OPDCInternal(playerid)
 	}
 	Iter_Remove(Character, playerid);
 }
+
+/*
+--------------------------------------------------------------------------------
+	PLAYERS ENDS
+---------------------------------------------------------------------------------
+*/
+
+#endif
 
 /*
 --------------------------------------------------------------------------------
@@ -1144,6 +1164,178 @@ public OnPlayerStreamOut(playerid, forplayerid)
 /*
 --------------------------------------------------------------------------------
 	PLAYERS STREAM ENDS
+---------------------------------------------------------------------------------
+*/
+
+#endif
+
+/*
+--------------------------------------------------------------------------------
+	VEHICLES STREAM
+---------------------------------------------------------------------------------
+*/
+
+#if FOREACH_VEHICLESSTREAM_ITERATOR
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_OnVehicleStreamIn
+Params:
+	vehicleid
+	forplayerid
+Return:
+	-
+Notes:
+	-
+--------------------------------------------------------------------------------
+*/
+
+public OnVehicleStreamIn(vehicleid, forplayerid)
+{
+	Iter_Add(VehiclesStream[forplayerid], vehicleid);
+
+	#if defined Iter_OnVehicleStreamIn
+		return Iter_OnVehicleStreamIn(vehicleid, forplayerid);
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnVehicleStreamIn
+	#undef OnVehicleStreamIn
+#else
+	#define _ALS_OnVehicleStreamIn
+#endif
+
+#define OnVehicleStreamIn Iter_OnVehicleStreamIn
+#if defined Iter_OnVehicleStreamIn
+	forward Iter_OnVehicleStreamIn(vehicleid, forplayerid);
+#endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_OnVehicleStreamOut
+Params:
+	vehicleid
+	forplayerid
+Return:
+	-
+Notes:
+	-
+--------------------------------------------------------------------------------
+*/
+
+public OnVehicleStreamOut(vehicleid, forplayerid)
+{
+	Iter_Remove(VehiclesStream[forplayerid], vehicleid);
+
+	#if defined Iter_OnVehicleStreamOut
+		return Iter_OnVehicleStreamOut(vehicleid, forplayerid);
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnVehicleStreamOut
+	#undef OnVehicleStreamOut
+#else
+	#define _ALS_OnVehicleStreamOut
+#endif
+
+#define OnVehicleStreamOut Iter_OnVehicleStreamOut
+#if defined Iter_OnVehicleStreamOut
+	forward Iter_OnVehicleStreamOut(vehicleid, forplayerid);
+#endif
+
+/*
+--------------------------------------------------------------------------------
+	VEHICLES STREAM ENDS
+---------------------------------------------------------------------------------
+*/
+
+#endif
+
+/*
+--------------------------------------------------------------------------------
+	ACTORS STREAM
+---------------------------------------------------------------------------------
+*/
+
+#if FOREACH_ACTORSSTREAM_ITERATOR
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_OnActorStreamIn
+Params:
+	actorid
+	forplayerid
+Return:
+	-
+Notes:
+	-
+--------------------------------------------------------------------------------
+*/
+
+public OnActorStreamIn(actorid, forplayerid)
+{
+	Iter_Add(ActorsStream[forplayerid], actorid);
+
+	#if defined Iter_OnActorStreamIn
+		return Iter_OnActorStreamIn(actorid, forplayerid);
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnActorStreamIn
+	#undef OnActorStreamIn
+#else
+	#define _ALS_OnActorStreamIn
+#endif
+
+#define OnActorStreamIn Iter_OnActorStreamIn
+#if defined Iter_OnActorStreamIn
+	forward Iter_OnActorStreamIn(actorid, forplayerid);
+#endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_OnActorStreamOut
+Params:
+	actorid
+	forplayerid
+Return:
+	-
+Notes:
+	-
+--------------------------------------------------------------------------------
+*/
+
+public OnActorStreamOut(actorid, forplayerid)
+{
+	Iter_Remove(ActorsStream[forplayerid], actorid);
+
+	#if defined Iter_OnActorStreamOut
+		return Iter_OnActorStreamOut(actorid, forplayerid);
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnActorStreamOut
+	#undef OnActorStreamOut
+#else
+	#define _ALS_OnActorStreamOut
+#endif
+
+#define OnActorStreamOut Iter_OnActorStreamOut
+#if defined Iter_OnActorStreamOut
+	forward Iter_OnActorStreamOut(actorid, forplayerid);
+#endif
+
+/*
+--------------------------------------------------------------------------------
+	ACTORS STREAM ENDS
 ---------------------------------------------------------------------------------
 */
 
