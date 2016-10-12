@@ -1483,14 +1483,16 @@ stock Iter_SafeRemoveInternal(&count, array[], value, &last, size)
 		last = size;
 		new
 			next = array[last];
-		while (next != value) {
+		while (next < size) {
+			if (next == value) {
+				array[last] = array[value];
+				array[value] = size + 1;
+				--count;
+				return 1;
+			}
 			last = next;
 			next = array[last];
 		}
-		array[last] = array[value];
-		array[value] = size + 1;
-		--count;
-		return 1;
 	}
 	return 0;
 }
