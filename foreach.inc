@@ -554,13 +554,24 @@ Notes:
 
 public OnGameModeInit()
 {
+#if defined GetPlayerPoolSize
+	new
+		LAST_PLAYER_ID = GetPlayerPoolSize() + 1,
+		LAST_VEHICLE_ID = GetVehiclePoolSize() + 1,
+		LAST_ACTOR_ID = GetActorPoolSize() + 1;
+#else
+	#define LAST_PLAYER_ID  MAX_PLAYERS
+	#define LAST_VEHICLE_ID MAX_VEHICLES
+	#define LAST_ACTOR_ID   MAX_ACTORS
+#endif
+
 #if FOREACH_CHARACTER_ITERATOR
 	// Player
 	Iter_Clear(Player);
 	Iter_Clear(Bot);
 	Iter_Clear(Character);
 
-	for (new i = 0; i != MAX_PLAYERS; ++i) {
+	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
 		if (!IsPlayerConnected(i)) {
 			continue;
 		}
@@ -577,7 +588,7 @@ public OnGameModeInit()
 #if FOREACH_VEHICLE_ITERATOR
 	// Vehicle
 	Iter_Clear(Vehicle);
-	for (new i = 1; i != MAX_VEHICLES; ++i) {
+	for (new i = 1; i != LAST_VEHICLE_ID; ++i) {
 		if (GetVehicleModel(i)) {
 			Iter_Add(Vehicle, i);
 		}
@@ -587,7 +598,7 @@ public OnGameModeInit()
 #if FOREACH_ACTOR_ITERATOR
 	// Actor
 	Iter_Clear(Actor);
-	for (new i = 0; i != MAX_ACTORS; ++i) {
+	for (new i = 0; i != LAST_ACTOR_ID; ++i) {
 		if (IsValidActor(i)) {
 			Iter_Add(Actor, i);
 		}
@@ -597,9 +608,9 @@ public OnGameModeInit()
 #if FOREACH_PLAYERSSTREAM_ITERATOR
 	// Players Stream
 	Iter_Init(PlayersStream);
-	for (new i = 0; i != MAX_PLAYERS; ++i) {
+	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
 		if (IsPlayerConnected(i)) {
-			for (new j = 0; j != MAX_PLAYERS; ++j) {
+			for (new j = 0; j != LAST_PLAYER_ID; ++j) {
 				if (IsPlayerStreamedIn(i, j)) {
 					Iter_Add(PlayersStream[i], j);
 				}
@@ -611,9 +622,9 @@ public OnGameModeInit()
 #if FOREACH_VEHICLESSTREAM_ITERATOR
 	// Vehicles Stream
 	Iter_Init(VehiclesStream);
-	for (new i = 0; i != MAX_PLAYERS; ++i) {
+	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
 		if (IsPlayerConnected(i)) {
-			for (new j = 1; j != MAX_VEHICLES; ++j) {
+			for (new j = 1; j != LAST_VEHICLE_ID; ++j) {
 				if (IsVehicleStreamedIn(j, i)) {
 					Iter_Add(VehiclesStream[i], j);
 				}
@@ -625,9 +636,9 @@ public OnGameModeInit()
 #if FOREACH_ACTORSSTREAM_ITERATOR
 	// Actors Stream
 	Iter_Init(ActorsStream);
-	for (new i = 0; i != MAX_PLAYERS; ++i) {
+	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
 		if (IsPlayerConnected(i)) {
-			for (new j = 0; j != MAX_ACTORS; ++j) {
+			for (new j = 0; j != LAST_ACTOR_ID; ++j) {
 				if (IsActorStreamedIn(j, i)) {
 					Iter_Add(ActorsStream[i], j);
 				}
