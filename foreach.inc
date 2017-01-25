@@ -196,6 +196,9 @@ Iterators:
 #define _Y_ITER_C2:sizeof%0(%1)@YSII_Ag-1;_:(%2=_Y_ITER_ARRAY:%3(%4)@YSII_Ag[%5])!=_Y_ITER_ARRAY_SIZE(%6);) -1;_:(%2=%3@YSII_Ag(%4,%5))!=-1;)
 #define _Y_ITER_C3:%0[%1]@YSII_Cg,%2[%3]@YSII_Ag[%4]={%5} _Y_ITER_C3:%0@YSII_Cg[%1],%0@YSII_Ag[%1][%4]
 
+forward Iter_AddInternal(&count, array[], value, size);
+forward Iter_RemoveInternal(&count, array[], value, size);
+forward Iter_ClearInternal(&count, array[], size);
 forward Iter_OPDCInternal(playerid);
 
 #if !defined FOREACH_CHARACTER_ITERATOR
