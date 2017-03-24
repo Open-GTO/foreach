@@ -163,7 +163,7 @@ stock Team_SetPlayerTeam(playerid, teamid)
 	}
 
 	if (teamid != NO_TEAM) {
-		Iter_Add(Team[current_team], playerid);
+		Iter_Add(Team[teamid], playerid);
 	}
 
 	return SetPlayerTeam(playerid, teamid);
