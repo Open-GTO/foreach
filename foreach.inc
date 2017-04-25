@@ -168,17 +168,17 @@ Iterators:
 --------------------------------------------------------------------------------
 */
 
-#if !defined _samp_included
-	#error Please include a_samp or a_npc before foreach
-#endif
+#define _FOREACH_LOCAL_VERSION 19
 
-#if defined _foreach_included
+// Foreach is testing us.
+#if defined _FOREACH_INC_TEST
 	#endinput
 #endif
+#define _FOREACH_INC_TEST
 
-#define _foreach_included
-
-#define _FOREACH_LOCAL_VERSION 19
+#if !defined _samp_included
+	#error "Please include a_samp or a_npc before foreach"
+#endif
 
 /*
 --------------------------------------------------------------------------------
