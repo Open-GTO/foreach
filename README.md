@@ -71,6 +71,18 @@ foreach (new vehicleid : Vehicle) {
 }
 ```
 
+#### Remove all existed vehicles and actors
+For removing `vehicles` or `actors` in foreach loop you should use `Safe` functions:
+```Pawn
+foreach (new vehicleid : Vehicle) {
+	DestroyVehicleSafe(vehicleid);
+}
+
+foreach (new actorid : Actor) {
+	DestroyActorSafe(actorid);
+}
+```
+
 #### Custom iterators
 Adds two iterators with players in team 1 and 2.
 ```Pawn

@@ -738,9 +738,9 @@ Notes:
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	#if defined Iter_OnPlayerDisconnect
-		Iter_OnPlayerDisconnect(playerid, reason);
-	#endif
+#if defined Iter_OnPlayerDisconnect
+	Iter_OnPlayerDisconnect(playerid, reason);
+#endif
 
 	SetTimerEx("Iter_OPDCInternal", 0, false, "i", playerid);
 	return 1;
@@ -901,6 +901,29 @@ stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn
 /*
 --------------------------------------------------------------------------------
 Function:
+	DestroyVehicleSafe
+Params:
+	-
+Return:
+	-
+Notes:
+---------------------------------------------------------------------------------
+*/
+
+stock DestroyVehicleSafe(&vehicleid)
+{
+	new success = DestroyVehicle(vehicleid);
+#if defined FOREACH_MULTISCRIPT
+	vehicleid = CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
+#else
+	Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
+#endif
+	return success;
+}
+
+/*
+--------------------------------------------------------------------------------
+Function:
 	Iter_DestroyVehicle
 Params:
 	-
@@ -964,7 +987,8 @@ Notes:
 
 public Iter_RemoveVehicle(vehicleid)
 {
-	return Iter_Remove(Vehicle, vehicleid);
+	Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
+	return vehicleid;
 }
 
 #endif
@@ -1017,6 +1041,29 @@ stock Iter_CreateActor(modelid, Float:X, Float:Y, Float:Z, Float:Rotation)
 #endif
 
 #define CreateActor Iter_CreateActor
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	DestroyActorSafe
+Params:
+	-
+Return:
+	-
+Notes:
+---------------------------------------------------------------------------------
+*/
+
+stock DestroyActorSafe(&actorid)
+{
+	new success = DestroyActor(actorid);
+#if defined FOREACH_MULTISCRIPT
+	actorid = CallRemoteFunction("Iter_RemoveActor", "i", actorid);
+#else
+	Iter_SafeRemove(Actor, actorid, actorid);
+#endif
+	return success;
+}
 
 /*
 --------------------------------------------------------------------------------
@@ -1084,7 +1131,8 @@ Notes:
 
 public Iter_RemoveActor(actorid)
 {
-	return Iter_Remove(Actor, actorid);
+	Iter_SafeRemove(Actor, actorid, actorid);
+	return actorid;
 }
 
 #endif
