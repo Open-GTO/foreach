@@ -86,11 +86,9 @@ foreach (new actorid : Actor) {
 #### Custom iterators
 Adds two iterators with players in team 1 and 2.
 ```Pawn
-#define MAX_PLAYERS_IN_TEAM MAX_PLAYERS / 2
-
 new
-	Iterator:Team1<MAX_PLAYERS_IN_TEAM>,
-	Iterator:Team2<MAX_PLAYERS_IN_TEAM>;
+	Iterator:Team1<MAX_PLAYERS>,
+	Iterator:Team2<MAX_PLAYERS>;
 
 stock Team_SetPlayerTeam(playerid, teamid)
 {
@@ -139,10 +137,9 @@ Adds array of iterators with players in teams:
 
 ```Pawn
 #define MAX_TEAMS 255
-#define MAX_PLAYERS_IN_TEAM MAX_PLAYERS / MAX_TEAMS
 
 new
-	Iterator:Team[MAX_TEAMS]<MAX_PLAYERS_IN_TEAM>;
+	Iterator:Team[MAX_TEAMS]<MAX_PLAYERS>;
 
 public OnGameModeInit()
 {
