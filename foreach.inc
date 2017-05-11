@@ -180,6 +180,30 @@ Iterators:
 	#error "Please include a_samp or a_npc before foreach"
 #endif
 
+#if defined FOREACH_PLAYERSSTREAM_ITERATOR
+	#error FOREACH_PLAYERSSTREAM_ITERATOR is deprecated, use FOREACH_I_PlayerPlayersStream
+#endif
+
+#if defined FOREACH_VEHICLESSTREAM_ITERATOR
+	#error FOREACH_VEHICLESSTREAM_ITERATOR is deprecated, use FOREACH_I_PlayerVehiclesStream
+#endif
+
+#if defined FOREACH_ACTORSSTREAM_ITERATOR
+	#error FOREACH_ACTORSSTREAM_ITERATOR is deprecated, use FOREACH_I_PlayerActorsStream
+#endif
+
+#if defined PlayersStream@YSII_Cg
+	#error PlayersStream is deprecated, use PlayerPlayersStream
+#endif
+
+#if defined VehiclesStream@YSII_Cg
+	#error VehiclesStream is deprecated, use PlayerVehiclesStream
+#endif
+
+#if defined ActorsStream@YSII_Cg
+	#error ActorsStream is deprecated, use PlayerActorsStream
+#endif
+
 /*
 --------------------------------------------------------------------------------
 	Base defines
@@ -201,37 +225,68 @@ forward Iter_RemoveInternal(&count, array[], value, size);
 forward Iter_ClearInternal(&count, array[], size);
 forward Iter_OPDCInternal(playerid);
 
-#if !defined FOREACH_CHARACTER_ITERATOR
-	#define FOREACH_CHARACTER_ITERATOR 1
+#if !defined FOREACH_I_Player
+	#define FOREACH_I_Player 1
 #endif
 
-#if !defined FOREACH_VEHICLE_ITERATOR
-	#define FOREACH_VEHICLE_ITERATOR 1
+#if !defined FOREACH_I_Bot
+	#define FOREACH_I_Bot 1
 #endif
 
-#if !defined FOREACH_ACTOR_ITERATOR
-	#define FOREACH_ACTOR_ITERATOR 1
+#if !defined FOREACH_I_Character
+	#define FOREACH_I_Character 1
 #endif
 
-#if !defined FOREACH_PLAYERSSTREAM_ITERATOR
-	#define FOREACH_PLAYERSSTREAM_ITERATOR 0
+#if !defined FOREACH_I_Vehicle
+	#define FOREACH_I_Vehicle 1
 #endif
 
-#if !defined FOREACH_VEHICLESSTREAM_ITERATOR
-	#define FOREACH_VEHICLESSTREAM_ITERATOR 0
+#if !defined FOREACH_I_Actor
+	#define FOREACH_I_Actor 1
 #endif
 
-#if !defined FOREACH_ACTORSSTREAM_ITERATOR
-	#define FOREACH_ACTORSSTREAM_ITERATOR 0
+#if !defined FOREACH_I_PlayerPlayersStream
+	#define FOREACH_I_PlayerPlayersStream 0
+#else
+	#undef FOREACH_I_PlayerPlayersStream
+	#define FOREACH_I_PlayerPlayersStream 1
+#endif
+
+#if !defined FOREACH_I_PlayerVehiclesStream
+	#define FOREACH_I_PlayerVehiclesStream 0
+#else
+	#undef FOREACH_I_PlayerVehiclesStream
+	#define FOREACH_I_PlayerVehiclesStream 1
+#endif
+
+#if !defined FOREACH_I_VehiclePlayersStream
+	#define FOREACH_I_VehiclePlayersStream 0
+#else
+	#undef FOREACH_I_VehiclePlayersStream
+	#define FOREACH_I_VehiclePlayersStream 1
+#endif
+
+#if !defined FOREACH_I_PlayerActorsStream
+	#define FOREACH_I_PlayerActorsStream 0
+#else
+	#undef FOREACH_I_PlayerActorsStream
+	#define FOREACH_I_PlayerActorsStream 1
+#endif
+
+#if !defined FOREACH_I_ActorPlayersStream
+	#define FOREACH_I_ActorPlayersStream 0
+#else
+	#undef FOREACH_I_ActorPlayersStream
+	#define FOREACH_I_ActorPlayersStream 1
 #endif
 
 #if defined FOREACH_MULTISCRIPT
-	#if FOREACH_VEHICLE_ITERATOR
+	#if FOREACH_I_Vehicle
 		forward Iter_AddVehicle(vehicleid);
 		forward Iter_RemoveVehicle(vehicleid);
 	#endif
 
-	#if FOREACH_ACTOR_ITERATOR
+	#if FOREACH_I_Actor
 		forward Iter_AddActor(actorid);
 		forward Iter_RemoveActor(actorid);
 	#endif
@@ -427,34 +482,47 @@ native Iter_Clear(IteratorArray:Name[]<>);
 --------------------------------------------------------------------------------
 */
 
-#if FOREACH_CHARACTER_ITERATOR
-	new
-		Iterator:Player<MAX_PLAYERS>,
-		Iterator:Bot<MAX_PLAYERS>,
-		Iterator:Character<MAX_PLAYERS>;
+#if FOREACH_I_Player
+	new Iterator:Player<MAX_PLAYERS>;
+#endif
+
+#if FOREACH_I_Bot
+	new Iterator:Bot<MAX_PLAYERS>;
 
 	#define NPC@YSII_Cg Bot@YSII_Cg
 	#define NPC@YSII_Ag Bot@YSII_Ag
 #endif
 
-#if FOREACH_VEHICLE_ITERATOR
+#if FOREACH_I_Character
+	new Iterator:Character<MAX_PLAYERS>;
+#endif
+
+#if FOREACH_I_Vehicle
 	new Iterator:Vehicle<MAX_VEHICLES>;
 #endif
 
-#if FOREACH_ACTOR_ITERATOR
+#if FOREACH_I_Actor
 	new Iterator:Actor<MAX_ACTORS>;
 #endif
 
-#if FOREACH_PLAYERSSTREAM_ITERATOR
-	new Iterator:PlayersStream[MAX_PLAYERS]<MAX_PLAYERS>;
+#if FOREACH_I_PlayerPlayersStream
+	new Iterator:PlayerPlayersStream[MAX_PLAYERS]<MAX_PLAYERS>;
 #endif
 
-#if FOREACH_VEHICLESSTREAM_ITERATOR
-	new Iterator:VehiclesStream[MAX_PLAYERS]<MAX_VEHICLES>;
+#if FOREACH_I_PlayerVehiclesStream
+	new Iterator:PlayerVehiclesStream[MAX_PLAYERS]<MAX_VEHICLES>;
 #endif
 
-#if FOREACH_ACTORSSTREAM_ITERATOR
-	new Iterator:ActorsStream[MAX_PLAYERS]<MAX_ACTORS>;
+#if FOREACH_I_VehiclePlayersStream
+	new Iterator:VehiclePlayersStream[MAX_VEHICLES]<MAX_PLAYERS>;
+#endif
+
+#if FOREACH_I_PlayerActorsStream
+	new Iterator:PlayerActorsStream[MAX_PLAYERS]<MAX_ACTORS>;
+#endif
+
+#if FOREACH_I_ActorPlayersStream
+	new Iterator:ActorPlayersStream[MAX_ACTORS]<MAX_PLAYERS>;
 #endif
 
 /*
@@ -516,26 +584,26 @@ Notes:
 
 #if defined FILTERSCRIPT
 
-public OnFilterScriptInit()
-{
-	OnGameModeInit();
+	public OnFilterScriptInit()
+	{
+		OnGameModeInit();
 
-	#if defined Iter_OnFilterScriptInit
-		return Iter_OnFilterScriptInit();
+		#if defined Iter_OnFilterScriptInit
+			return Iter_OnFilterScriptInit();
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnFilterScriptInit
+		#undef OnFilterScriptInit
 	#else
-		return 1;
+		#define _ALS_OnFilterScriptInit
 	#endif
-}
-#if defined _ALS_OnFilterScriptInit
-	#undef OnFilterScriptInit
-#else
-	#define _ALS_OnFilterScriptInit
-#endif
 
-#define OnFilterScriptInit Iter_OnFilterScriptInit
-#if defined Iter_OnFilterScriptInit
-	forward Iter_OnFilterScriptInit();
-#endif
+	#define OnFilterScriptInit Iter_OnFilterScriptInit
+	#if defined Iter_OnFilterScriptInit
+		forward Iter_OnFilterScriptInit();
+	#endif
 
 #endif
 
@@ -557,98 +625,152 @@ Notes:
 
 public OnGameModeInit()
 {
-#if defined GetPlayerPoolSize
-	new
-		LAST_PLAYER_ID = GetPlayerPoolSize() + 1,
-		LAST_VEHICLE_ID = GetVehiclePoolSize() + 1,
-		LAST_ACTOR_ID = GetActorPoolSize() + 1;
-#else
-	#define LAST_PLAYER_ID  MAX_PLAYERS
-	#define LAST_VEHICLE_ID MAX_VEHICLES
-	#define LAST_ACTOR_ID   MAX_ACTORS
-#endif
+	#if defined GetPlayerPoolSize
+		new
+			LAST_PLAYER_ID = GetPlayerPoolSize() + 1,
+			LAST_VEHICLE_ID = GetVehiclePoolSize() + 1,
+			LAST_ACTOR_ID = GetActorPoolSize() + 1;
+	#else
+		#define LAST_PLAYER_ID  MAX_PLAYERS
+		#define LAST_VEHICLE_ID MAX_VEHICLES
+		#define LAST_ACTOR_ID   MAX_ACTORS
+	#endif
 
-#if FOREACH_CHARACTER_ITERATOR
-	// Player
-	Iter_Clear(Player);
-	Iter_Clear(Bot);
-	Iter_Clear(Character);
+	#if FOREACH_I_Player || FOREACH_I_Bot || FOREACH_I_Character
+		#if defined FOREACH_I_Player
+			Iter_Clear(Player);
+		#endif
 
-	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
-		if (!IsPlayerConnected(i)) {
-			continue;
+		#if defined FOREACH_I_Bot
+			Iter_Clear(Bot);
+		#endif
+
+		#if defined FOREACH_I_Character
+			Iter_Clear(Character);
+		#endif
+
+		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+			if (!IsPlayerConnected(playerid)) {
+				continue;
+			}
+
+			if (!IsPlayerNPC(playerid)) {
+				#if defined FOREACH_I_Player
+					Iter_Add(Player, playerid);
+				#endif
+			} else {
+				#if defined FOREACH_I_Bot
+					Iter_Add(Bot, playerid);
+				#endif
+			}
+
+			#if defined FOREACH_I_Character
+				Iter_Add(Character, playerid);
+			#endif
 		}
+	#endif
 
-		if (!IsPlayerNPC(i)) {
-			Iter_Add(Player, i);
-		} else {
-			Iter_Add(Bot, i);
+	#if FOREACH_I_Vehicle
+		Iter_Clear(Vehicle);
+
+		for (new vehicleid = 1; vehicleid != LAST_VEHICLE_ID; ++vehicleid) {
+			if (!GetVehicleModel(vehicleid)) {
+				continue;
+			}
+
+			Iter_Add(Vehicle, vehicleid);
 		}
-		Iter_Add(Character, i);
-	}
-#endif
+	#endif
 
-#if FOREACH_VEHICLE_ITERATOR
-	// Vehicle
-	Iter_Clear(Vehicle);
-	for (new i = 1; i != LAST_VEHICLE_ID; ++i) {
-		if (GetVehicleModel(i)) {
-			Iter_Add(Vehicle, i);
+	#if FOREACH_I_Actor
+		Iter_Clear(Actor);
+
+		for (new actorid = 0; actorid != LAST_ACTOR_ID; ++actorid) {
+			if (!IsValidActor(actorid)) {
+				continue;
+			}
+
+			Iter_Add(Actor, actorid);
 		}
-	}
-#endif
+	#endif
 
-#if FOREACH_ACTOR_ITERATOR
-	// Actor
-	Iter_Clear(Actor);
-	for (new i = 0; i != LAST_ACTOR_ID; ++i) {
-		if (IsValidActor(i)) {
-			Iter_Add(Actor, i);
-		}
-	}
-#endif
+	#if FOREACH_I_PlayerPlayersStream
+		Iter_Init(PlayerPlayersStream);
 
-#if FOREACH_PLAYERSSTREAM_ITERATOR
-	// Players Stream
-	Iter_Init(PlayersStream);
-	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
-		if (IsPlayerConnected(i)) {
-			for (new j = 0; j != LAST_PLAYER_ID; ++j) {
-				if (IsPlayerStreamedIn(i, j)) {
-					Iter_Add(PlayersStream[i], j);
+		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+			if (!IsPlayerConnected(playerid)) {
+				continue;
+			}
+
+			for (new targetid = 0; targetid != LAST_PLAYER_ID; ++targetid) {
+				if (!IsPlayerStreamedIn(playerid, targetid)) {
+					continue;
 				}
+
+				Iter_Add(PlayerPlayersStream[playerid], targetid);
 			}
 		}
-	}
-#endif
+	#endif
 
-#if FOREACH_VEHICLESSTREAM_ITERATOR
-	// Vehicles Stream
-	Iter_Init(VehiclesStream);
-	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
-		if (IsPlayerConnected(i)) {
-			for (new j = 1; j != LAST_VEHICLE_ID; ++j) {
-				if (IsVehicleStreamedIn(j, i)) {
-					Iter_Add(VehiclesStream[i], j);
+	#if FOREACH_I_PlayerVehiclesStream || FOREACH_I_VehiclePlayersStream
+		#if FOREACH_I_PlayerVehiclesStream
+			Iter_Init(PlayerVehiclesStream);
+		#endif
+
+		#if FOREACH_I_VehiclePlayersStream
+			Iter_Init(VehiclePlayersStream);
+		#endif
+
+		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+			if (!IsPlayerConnected(playerid)) {
+				continue;
+			}
+
+			for (new vehicleid = 1; vehicleid != LAST_VEHICLE_ID; ++vehicleid) {
+				if (!IsVehicleStreamedIn(vehicleid, playerid)) {
+					continue;
 				}
+
+				#if FOREACH_I_PlayerVehiclesStream
+					Iter_Add(PlayerVehiclesStream[playerid], vehicleid);
+				#endif
+
+				#if FOREACH_I_VehiclePlayersStream
+					Iter_Add(VehiclePlayersStream[vehicleid], playerid);
+				#endif
 			}
 		}
-	}
-#endif
+	#endif
 
-#if FOREACH_ACTORSSTREAM_ITERATOR
-	// Actors Stream
-	Iter_Init(ActorsStream);
-	for (new i = 0; i != LAST_PLAYER_ID; ++i) {
-		if (IsPlayerConnected(i)) {
-			for (new j = 0; j != LAST_ACTOR_ID; ++j) {
-				if (IsActorStreamedIn(j, i)) {
-					Iter_Add(ActorsStream[i], j);
+	#if FOREACH_I_PlayerActorsStream || FOREACH_I_ActorPlayersStream
+		#if FOREACH_I_PlayerActorsStream
+			Iter_Init(PlayerActorsStream);
+		#endif
+
+		#if FOREACH_I_ActorPlayersStream
+			Iter_Init(ActorPlayersStream);
+		#endif
+
+		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+			if (!IsPlayerConnected(playerid)) {
+				continue;
+			}
+
+			for (new actorid = 0; actorid != LAST_ACTOR_ID; ++actorid) {
+				if (!IsActorStreamedIn(actorid, playerid)) {
+					continue;
 				}
+
+				#if FOREACH_I_PlayerActorsStream
+					Iter_Add(PlayerActorsStream[playerid], actorid);
+				#endif
+
+				#if FOREACH_I_ActorPlayersStream
+					Iter_Add(ActorPlayersStream[actorid], playerid);
+				#endif
 			}
 		}
-	}
-#endif
+	#endif
 
 	#if defined Iter_OnGameModeInit
 		return Iter_OnGameModeInit();
@@ -668,740 +790,605 @@ public OnGameModeInit()
 #endif
 
 /*
---------------------------------------------------------------------------------
 	CHARACTERS
----------------------------------------------------------------------------------
 */
 
-#if FOREACH_CHARACTER_ITERATOR
+#if FOREACH_I_Player || FOREACH_I_Bot || FOREACH_I_Character
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnPlayerConnect
-Params:
-	playerid - Player who joined.
-Return:
-	-
-Notes:
-	Adds a player to the loop data. Now sorts the list too. Note that I found
-	the most bizzare bug ever (I *think* it may be a compiler but, but it
-	requires further investigation), basically it seems that multiple variables
-	were being treated as the same variable (namely @YSII_EgotS and
-	@YSII_CgharacterS were the same and @YSII_EgotC and @YSII_CgharacterC were the
-	same). Adding print statements which reference these variables seem to fix
-	the problem, and I have tried to make sure that the values will never actually
-	get printed.
---------------------------------------------------------------------------------
-*/
+	/*
+	--------------------------------------------------------------------------------
+	Function:
+		Iter_OnPlayerConnect
+	Params:
+		playerid - Player who joined.
+	Return:
+		-
+	Notes:
+		Adds a player to the loop data. Now sorts the list too. Note that I found
+		the most bizzare bug ever (I *think* it may be a compiler but, but it
+		requires further investigation), basically it seems that multiple variables
+		were being treated as the same variable (namely @YSII_EgotS and
+		@YSII_CgharacterS were the same and @YSII_EgotC and @YSII_CgharacterC were the
+		same). Adding print statements which reference these variables seem to fix
+		the problem, and I have tried to make sure that the values will never actually
+		get printed.
+	--------------------------------------------------------------------------------
+	*/
 
-public OnPlayerConnect(playerid)
-{
-	if (!IsPlayerNPC(playerid)) {
-		Iter_Add(Player, playerid);
-	} else {
-		Iter_Add(Bot, playerid);
+	public OnPlayerConnect(playerid)
+	{
+		if (!IsPlayerNPC(playerid)) {
+			#if FOREACH_I_Player
+				Iter_Add(Player, playerid);
+			#endif
+		} else {
+			#if FOREACH_I_Bot
+				Iter_Add(Bot, playerid);
+			#endif
+		}
+
+		#if FOREACH_I_Character
+			Iter_Add(Character, playerid);
+		#endif
+
+		#if defined Iter_OnPlayerConnect
+			return Iter_OnPlayerConnect(playerid);
+		#else
+			return 1;
+		#endif
 	}
-	Iter_Add(Character, playerid);
+	#if defined _ALS_OnPlayerConnect
+		#undef OnPlayerConnect
+	#else
+		#define _ALS_OnPlayerConnect
+	#endif
 
+	#define OnPlayerConnect Iter_OnPlayerConnect
 	#if defined Iter_OnPlayerConnect
-		return Iter_OnPlayerConnect(playerid);
-	#else
-		return 1;
+		forward Iter_OnPlayerConnect(playerid);
 	#endif
-}
-#if defined _ALS_OnPlayerConnect
-	#undef OnPlayerConnect
-#else
-	#define _ALS_OnPlayerConnect
-#endif
 
-#define OnPlayerConnect Iter_OnPlayerConnect
-#if defined Iter_OnPlayerConnect
-	forward Iter_OnPlayerConnect(playerid);
-#endif
+	/*
+	--------------------------------------------------------------------------------
+	Function:
+		Iter_OnPlayerDisconnect
+	Params:
+		playerid - Player who left.
+	Return:
+		-
+	Notes:
+		Removes a player from the loop data. No longer uses "hook" to ENSURE that
+		this is always last. Previously I think that the order of evaluation in
+		y_hooks meant that this got called before the user "OnPlayerDisconnect".
+	--------------------------------------------------------------------------------
+	*/
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnPlayerDisconnect
-Params:
-	playerid - Player who left.
-Return:
-	-
-Notes:
-	Removes a player from the loop data. No longer uses "hook" to ENSURE that
-	this is always last. Previously I think that the order of evaluation in
-	y_hooks meant that this got called before the user "OnPlayerDisconnect".
---------------------------------------------------------------------------------
-*/
+	public OnPlayerDisconnect(playerid, reason)
+	{
+	#if defined Iter_OnPlayerDisconnect
+		Iter_OnPlayerDisconnect(playerid, reason);
+	#endif
 
-public OnPlayerDisconnect(playerid, reason)
-{
-#if defined Iter_OnPlayerDisconnect
-	Iter_OnPlayerDisconnect(playerid, reason);
-#endif
-
-	SetTimerEx("Iter_OPDCInternal", 0, false, "i", playerid);
-	return 1;
-}
-#if defined _ALS_OnPlayerDisconnect
-	#undef OnPlayerDisconnect
-#else
-	#define _ALS_OnPlayerDisconnect
-#endif
-
-#define OnPlayerDisconnect Iter_OnPlayerDisconnect
-#if defined Iter_OnPlayerDisconnect
-	forward Iter_OnPlayerDisconnect(playerid, reason);
-#endif
-
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OPDCInternal
-Params:
-	playerid - Player who left.
-Return:
-	-
-Notes:
-	Called AFTER "OnPlayerDisconnect" so that using "Kick" inside a "foreach"
-	loop does not crash the server due to an OOB error.
---------------------------------------------------------------------------------
-*/
-
-public Iter_OPDCInternal(playerid)
-{
-	if (IsPlayerConnected(playerid)) {
-		return;
+		SetTimerEx("Iter_OPDCInternal", 0, false, "i", playerid);
+		return 1;
 	}
-	if (!IsPlayerNPC(playerid)) {
-		Iter_Remove(Player, playerid);
-	} else {
-		Iter_Remove(Bot, playerid);
+	#if defined _ALS_OnPlayerDisconnect
+		#undef OnPlayerDisconnect
+	#else
+		#define _ALS_OnPlayerDisconnect
+	#endif
+
+	#define OnPlayerDisconnect Iter_OnPlayerDisconnect
+	#if defined Iter_OnPlayerDisconnect
+		forward Iter_OnPlayerDisconnect(playerid, reason);
+	#endif
+
+	/*
+	--------------------------------------------------------------------------------
+	Function:
+		Iter_OPDCInternal
+	Params:
+		playerid - Player who left.
+	Return:
+		-
+	Notes:
+		Called AFTER "OnPlayerDisconnect" so that using "Kick" inside a "foreach"
+		loop does not crash the server due to an OOB error.
+	--------------------------------------------------------------------------------
+	*/
+
+	public Iter_OPDCInternal(playerid)
+	{
+		if (IsPlayerConnected(playerid)) {
+			return;
+		}
+
+		if (!IsPlayerNPC(playerid)) {
+			#if FOREACH_I_Player
+				Iter_Remove(Player, playerid);
+			#endif
+		} else {
+			#if FOREACH_I_Bot
+				Iter_Remove(Bot, playerid);
+			#endif
+		}
+
+		#if FOREACH_I_Character
+			Iter_Remove(Character, playerid);
+		#endif
 	}
-	Iter_Remove(Character, playerid);
-}
+
+#endif
 
 /*
---------------------------------------------------------------------------------
 	CHARACTERS ENDS
----------------------------------------------------------------------------------
 */
 
-#endif
-
 /*
---------------------------------------------------------------------------------
 	VEHICLES
----------------------------------------------------------------------------------
 */
 
-#if FOREACH_VEHICLE_ITERATOR
+#if FOREACH_I_Vehicle
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_CreateVehicle
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		Iter_CreateVehicle
+	*/
 
-stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
-{
-	new
-		ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, addsiren);
-	if (ret != INVALID_VEHICLE_ID) {
-	#if defined FOREACH_MULTISCRIPT
-		CallRemoteFunction("Iter_AddVehicle", "i", ret);
-	#else
-		Iter_Add(Vehicle, ret);
-	#endif
+	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
+	{
+		new
+			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, addsiren);
+
+		if (ret != INVALID_VEHICLE_ID) {
+			#if defined FOREACH_MULTISCRIPT
+				CallRemoteFunction("Iter_AddVehicle", "i", ret);
+			#else
+				Iter_Add(Vehicle, ret);
+			#endif
+		}
+
+		return ret;
 	}
-	return ret;
-}
-#if defined _ALS_CreateVehicle
-	#undef CreateVehicle
-#else
-	#define _ALS_CreateVehicle
-#endif
-
-#define CreateVehicle Iter_CreateVehicle
-
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_AddStaticVehicle
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
-
-stock Iter_AddStaticVehicle(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2)
-{
-	new
-		ret = AddStaticVehicle(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2);
-	if (ret != INVALID_VEHICLE_ID) {
-	#if defined FOREACH_MULTISCRIPT
-		CallRemoteFunction("Iter_AddVehicle", "i", ret);
+	#if defined _ALS_CreateVehicle
+		#undef CreateVehicle
 	#else
-		Iter_Add(Vehicle, ret);
+		#define _ALS_CreateVehicle
 	#endif
+
+	#define CreateVehicle Iter_CreateVehicle
+
+	/*
+		Iter_AddStaticVehicle
+	*/
+
+	stock Iter_AddStaticVehicle(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2)
+	{
+		new
+			ret = AddStaticVehicle(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2);
+
+		if (ret != INVALID_VEHICLE_ID) {
+			#if defined FOREACH_MULTISCRIPT
+				CallRemoteFunction("Iter_AddVehicle", "i", ret);
+			#else
+				Iter_Add(Vehicle, ret);
+			#endif
+		}
+
+		return ret;
 	}
-	return ret;
-}
-#if defined _ALS_AddStaticVehicle
-	#undef AddStaticVehicle
-#else
-	#define _ALS_AddStaticVehicle
-#endif
-
-#define AddStaticVehicle Iter_AddStaticVehicle
-
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_AddStaticVehicleEx
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
-
-stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
-{
-	new
-		ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, addsiren);
-	if (ret != INVALID_VEHICLE_ID) {
-	#if defined FOREACH_MULTISCRIPT
-		CallRemoteFunction("Iter_AddVehicle", "i", ret);
+	#if defined _ALS_AddStaticVehicle
+		#undef AddStaticVehicle
 	#else
-		Iter_Add(Vehicle, ret);
+		#define _ALS_AddStaticVehicle
 	#endif
+
+	#define AddStaticVehicle Iter_AddStaticVehicle
+
+	/*
+		Iter_AddStaticVehicleEx
+	*/
+
+	stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
+	{
+		new
+			ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, addsiren);
+
+		if (ret != INVALID_VEHICLE_ID) {
+			#if defined FOREACH_MULTISCRIPT
+				CallRemoteFunction("Iter_AddVehicle", "i", ret);
+			#else
+				Iter_Add(Vehicle, ret);
+			#endif
+		}
+
+		return ret;
 	}
-	return ret;
-}
-#if defined _ALS_AddStaticVehicleEx
-	#undef AddStaticVehicleEx
-#else
-	#define _ALS_AddStaticVehicleEx
-#endif
+	#if defined _ALS_AddStaticVehicleEx
+		#undef AddStaticVehicleEx
+	#else
+		#define _ALS_AddStaticVehicleEx
+	#endif
 
-#define AddStaticVehicleEx Iter_AddStaticVehicleEx
+	#define AddStaticVehicleEx Iter_AddStaticVehicleEx
 
-/*
---------------------------------------------------------------------------------
-Function:
-	DestroyVehicleSafe
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		DestroyVehicleSafe
+	*/
 
-stock DestroyVehicleSafe(&vehicleid)
-{
-	new success = DestroyVehicle(vehicleid);
-#if defined FOREACH_MULTISCRIPT
-	vehicleid = CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
-#else
-	Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
-#endif
-	return success;
-}
+	stock DestroyVehicleSafe(&vehicleid)
+	{
+		new success = DestroyVehicle(vehicleid);
+		#if defined FOREACH_MULTISCRIPT
+			vehicleid = CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
+		#else
+			Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
+		#endif
+		return success;
+	}
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_DestroyVehicle
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		Iter_DestroyVehicle
+	*/
 
-stock Iter_DestroyVehicle(vehicleid)
-{
-#if defined FOREACH_MULTISCRIPT
-	CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
-#else
-	Iter_Remove(Vehicle, vehicleid);
-#endif
-	return DestroyVehicle(vehicleid);
-}
-#if defined _ALS_DestroyVehicle
-	#undef DestroyVehicle
-#else
-	#define _ALS_DestroyVehicle
-#endif
+	stock Iter_DestroyVehicle(vehicleid)
+	{
+		#if defined FOREACH_MULTISCRIPT
+			CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
+		#else
+			Iter_Remove(Vehicle, vehicleid);
+		#endif
+		return DestroyVehicle(vehicleid);
+	}
+	#if defined _ALS_DestroyVehicle
+		#undef DestroyVehicle
+	#else
+		#define _ALS_DestroyVehicle
+	#endif
 
-#define DestroyVehicle Iter_DestroyVehicle
+	#define DestroyVehicle Iter_DestroyVehicle
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_AddVehicle
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		Iter_AddVehicle
+	*/
 
-#if defined FOREACH_MULTISCRIPT
+	#if defined FOREACH_MULTISCRIPT
 
-public Iter_AddVehicle(vehicleid)
-{
-	return Iter_Add(Vehicle, vehicleid);
-}
+		public Iter_AddVehicle(vehicleid)
+		{
+			return Iter_Add(Vehicle, vehicleid);
+		}
+
+	#endif
+
+	/*
+		Iter_RemoveVehicle
+	*/
+
+	#if defined FOREACH_MULTISCRIPT
+
+		public Iter_RemoveVehicle(vehicleid)
+		{
+			Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
+			return vehicleid;
+		}
+
+	#endif
 
 #endif
 
 /*
---------------------------------------------------------------------------------
-Function:
-	Iter_RemoveVehicle
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
-
-#if defined FOREACH_MULTISCRIPT
-
-public Iter_RemoveVehicle(vehicleid)
-{
-	Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
-	return vehicleid;
-}
-
-#endif
-
-/*
---------------------------------------------------------------------------------
 	VEHICLES ENDS
----------------------------------------------------------------------------------
 */
 
-#endif
-
 /*
---------------------------------------------------------------------------------
 	ACTORS
----------------------------------------------------------------------------------
 */
 
-#if FOREACH_ACTOR_ITERATOR
+#if FOREACH_I_Actor
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_CreateActor
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		Iter_CreateActor
+	*/
 
-stock Iter_CreateActor(modelid, Float:X, Float:Y, Float:Z, Float:Rotation)
-{
-	new
-		ret = CreateActor(modelid, X, Y, Z, Rotation);
-	if (ret != INVALID_ACTOR_ID) {
-	#if defined FOREACH_MULTISCRIPT
-		CallRemoteFunction("Iter_AddActor", "i", ret);
-	#else
-		Iter_Add(Actor, ret);
-	#endif
+	stock Iter_CreateActor(modelid, Float:X, Float:Y, Float:Z, Float:Rotation)
+	{
+		new
+			ret = CreateActor(modelid, X, Y, Z, Rotation);
+		if (ret != INVALID_ACTOR_ID) {
+			#if defined FOREACH_MULTISCRIPT
+				CallRemoteFunction("Iter_AddActor", "i", ret);
+			#else
+				Iter_Add(Actor, ret);
+			#endif
+		}
+		return ret;
 	}
-	return ret;
-}
-#if defined _ALS_CreateActor
-	#undef CreateActor
-#else
-	#define _ALS_CreateActor
-#endif
+	#if defined _ALS_CreateActor
+		#undef CreateActor
+	#else
+		#define _ALS_CreateActor
+	#endif
 
-#define CreateActor Iter_CreateActor
+	#define CreateActor Iter_CreateActor
 
-/*
---------------------------------------------------------------------------------
-Function:
-	DestroyActorSafe
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		DestroyActorSafe
+	*/
 
-stock DestroyActorSafe(&actorid)
-{
-	new success = DestroyActor(actorid);
-#if defined FOREACH_MULTISCRIPT
-	actorid = CallRemoteFunction("Iter_RemoveActor", "i", actorid);
-#else
-	Iter_SafeRemove(Actor, actorid, actorid);
-#endif
-	return success;
-}
+	stock DestroyActorSafe(&actorid)
+	{
+		new success = DestroyActor(actorid);
+		#if defined FOREACH_MULTISCRIPT
+			actorid = CallRemoteFunction("Iter_RemoveActor", "i", actorid);
+		#else
+			Iter_SafeRemove(Actor, actorid, actorid);
+		#endif
+		return success;
+	}
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_DestroyActor
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		Iter_DestroyActor
+	*/
 
-stock Iter_DestroyActor(actorid)
-{
-#if defined FOREACH_MULTISCRIPT
-	CallRemoteFunction("Iter_RemoveActor", "i", actorid);
-#else
-	Iter_Remove(Actor, actorid);
-#endif
-	return DestroyActor(actorid);
-}
-#if defined _ALS_DestroyActor
-	#undef DestroyActor
-#else
-	#define _ALS_DestroyActor
-#endif
+	stock Iter_DestroyActor(actorid)
+	{
+		#if defined FOREACH_MULTISCRIPT
+			CallRemoteFunction("Iter_RemoveActor", "i", actorid);
+		#else
+			Iter_Remove(Actor, actorid);
+		#endif
+		return DestroyActor(actorid);
+	}
+	#if defined _ALS_DestroyActor
+		#undef DestroyActor
+	#else
+		#define _ALS_DestroyActor
+	#endif
 
-#define DestroyActor Iter_DestroyActor
+	#define DestroyActor Iter_DestroyActor
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_AddActor
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
+	/*
+		Iter_AddActor
+	*/
 
-#if defined FOREACH_MULTISCRIPT
+	#if defined FOREACH_MULTISCRIPT
 
-public Iter_AddActor(actorid)
-{
-	return Iter_Add(Actor, actorid);
-}
+		public Iter_AddActor(actorid)
+		{
+			return Iter_Add(Actor, actorid);
+		}
+
+	#endif
+
+	/*
+		Iter_RemoveActor
+	*/
+
+	#if defined FOREACH_MULTISCRIPT
+
+		public Iter_RemoveActor(actorid)
+		{
+			Iter_SafeRemove(Actor, actorid, actorid);
+			return actorid;
+		}
+
+	#endif
 
 #endif
 
 /*
---------------------------------------------------------------------------------
-Function:
-	Iter_RemoveActor
-Params:
-	-
-Return:
-	-
-Notes:
----------------------------------------------------------------------------------
-*/
-
-#if defined FOREACH_MULTISCRIPT
-
-public Iter_RemoveActor(actorid)
-{
-	Iter_SafeRemove(Actor, actorid, actorid);
-	return actorid;
-}
-
-#endif
-
-/*
---------------------------------------------------------------------------------
 	ACTORS ENDS
----------------------------------------------------------------------------------
 */
 
-#endif
-
 /*
---------------------------------------------------------------------------------
 	PLAYERS STREAM
----------------------------------------------------------------------------------
 */
 
-#if FOREACH_PLAYERSSTREAM_ITERATOR
+#if FOREACH_I_PlayerPlayersStream
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnPlayerStreamIn
-Params:
-	playerid
-	forplayerid
-Return:
-	-
-Notes:
-	-
---------------------------------------------------------------------------------
-*/
+	/*
+		Iter_OnPlayerStreamIn
+	*/
 
-public OnPlayerStreamIn(playerid, forplayerid)
-{
-	Iter_Add(PlayersStream[playerid], forplayerid);
+	public OnPlayerStreamIn(playerid, forplayerid)
+	{
+		Iter_Add(PlayerPlayersStream[playerid], forplayerid);
 
+		#if defined Iter_OnPlayerStreamIn
+			return Iter_OnPlayerStreamIn(playerid, forplayerid);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnPlayerStreamIn
+		#undef OnPlayerStreamIn
+	#else
+		#define _ALS_OnPlayerStreamIn
+	#endif
+
+	#define OnPlayerStreamIn Iter_OnPlayerStreamIn
 	#if defined Iter_OnPlayerStreamIn
-		return Iter_OnPlayerStreamIn(playerid, forplayerid);
-	#else
-		return 1;
+		forward Iter_OnPlayerStreamIn(playerid, forplayerid);
 	#endif
-}
-#if defined _ALS_OnPlayerStreamIn
-	#undef OnPlayerStreamIn
-#else
-	#define _ALS_OnPlayerStreamIn
-#endif
 
-#define OnPlayerStreamIn Iter_OnPlayerStreamIn
-#if defined Iter_OnPlayerStreamIn
-	forward Iter_OnPlayerStreamIn(playerid, forplayerid);
-#endif
+	/*
+		Iter_OnPlayerStreamOut
+	*/
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnPlayerStreamOut
-Params:
-	playerid
-	forplayerid
-Return:
-	-
-Notes:
-	-
---------------------------------------------------------------------------------
-*/
+	public OnPlayerStreamOut(playerid, forplayerid)
+	{
+		Iter_Remove(PlayerPlayersStream[playerid], forplayerid);
 
-public OnPlayerStreamOut(playerid, forplayerid)
-{
-	Iter_Remove(PlayersStream[playerid], forplayerid);
+		#if defined Iter_OnPlayerStreamOut
+			return Iter_OnPlayerStreamOut(playerid, forplayerid);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnPlayerStreamOut
+		#undef OnPlayerStreamOut
+	#else
+		#define _ALS_OnPlayerStreamOut
+	#endif
 
+	#define OnPlayerStreamOut Iter_OnPlayerStreamOut
 	#if defined Iter_OnPlayerStreamOut
-		return Iter_OnPlayerStreamOut(playerid, forplayerid);
-	#else
-		return 1;
+		forward Iter_OnPlayerStreamOut(playerid, forplayerid);
 	#endif
-}
-#if defined _ALS_OnPlayerStreamOut
-	#undef OnPlayerStreamOut
-#else
-	#define _ALS_OnPlayerStreamOut
-#endif
 
-#define OnPlayerStreamOut Iter_OnPlayerStreamOut
-#if defined Iter_OnPlayerStreamOut
-	forward Iter_OnPlayerStreamOut(playerid, forplayerid);
 #endif
 
 /*
---------------------------------------------------------------------------------
 	PLAYERS STREAM ENDS
----------------------------------------------------------------------------------
 */
 
-#endif
-
 /*
---------------------------------------------------------------------------------
 	VEHICLES STREAM
----------------------------------------------------------------------------------
 */
 
-#if FOREACH_VEHICLESSTREAM_ITERATOR
+#if FOREACH_I_PlayerVehiclesStream || FOREACH_I_VehiclePlayersStream
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnVehicleStreamIn
-Params:
-	vehicleid
-	forplayerid
-Return:
-	-
-Notes:
-	-
---------------------------------------------------------------------------------
-*/
+	/*
+		Iter_OnVehicleStreamIn
+	*/
 
-public OnVehicleStreamIn(vehicleid, forplayerid)
-{
-	Iter_Add(VehiclesStream[forplayerid], vehicleid);
+	public OnVehicleStreamIn(vehicleid, forplayerid)
+	{
+		#if FOREACH_I_PlayerVehiclesStream
+			Iter_Add(PlayerVehiclesStream[forplayerid], vehicleid);
+		#endif
 
+		#if FOREACH_I_VehiclePlayersStream
+			Iter_Add(VehiclePlayersStream[vehicleid], forplayerid);
+		#endif
+
+		#if defined Iter_OnVehicleStreamIn
+			return Iter_OnVehicleStreamIn(vehicleid, forplayerid);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnVehicleStreamIn
+		#undef OnVehicleStreamIn
+	#else
+		#define _ALS_OnVehicleStreamIn
+	#endif
+
+	#define OnVehicleStreamIn Iter_OnVehicleStreamIn
 	#if defined Iter_OnVehicleStreamIn
-		return Iter_OnVehicleStreamIn(vehicleid, forplayerid);
-	#else
-		return 1;
+		forward Iter_OnVehicleStreamIn(vehicleid, forplayerid);
 	#endif
-}
-#if defined _ALS_OnVehicleStreamIn
-	#undef OnVehicleStreamIn
-#else
-	#define _ALS_OnVehicleStreamIn
-#endif
 
-#define OnVehicleStreamIn Iter_OnVehicleStreamIn
-#if defined Iter_OnVehicleStreamIn
-	forward Iter_OnVehicleStreamIn(vehicleid, forplayerid);
-#endif
+	/*
+		Iter_OnVehicleStreamOut
+	*/
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnVehicleStreamOut
-Params:
-	vehicleid
-	forplayerid
-Return:
-	-
-Notes:
-	-
---------------------------------------------------------------------------------
-*/
+	public OnVehicleStreamOut(vehicleid, forplayerid)
+	{
+		#if FOREACH_I_PlayerVehiclesStream
+			Iter_Remove(PlayerVehiclesStream[forplayerid], vehicleid);
+		#endif
 
-public OnVehicleStreamOut(vehicleid, forplayerid)
-{
-	Iter_Remove(VehiclesStream[forplayerid], vehicleid);
+		#if FOREACH_I_VehiclePlayersStream
+			Iter_Remove(VehiclePlayersStream[vehicleid], forplayerid);
+		#endif
 
+		#if defined Iter_OnVehicleStreamOut
+			return Iter_OnVehicleStreamOut(vehicleid, forplayerid);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnVehicleStreamOut
+		#undef OnVehicleStreamOut
+	#else
+		#define _ALS_OnVehicleStreamOut
+	#endif
+
+	#define OnVehicleStreamOut Iter_OnVehicleStreamOut
 	#if defined Iter_OnVehicleStreamOut
-		return Iter_OnVehicleStreamOut(vehicleid, forplayerid);
-	#else
-		return 1;
+		forward Iter_OnVehicleStreamOut(vehicleid, forplayerid);
 	#endif
-}
-#if defined _ALS_OnVehicleStreamOut
-	#undef OnVehicleStreamOut
-#else
-	#define _ALS_OnVehicleStreamOut
-#endif
 
-#define OnVehicleStreamOut Iter_OnVehicleStreamOut
-#if defined Iter_OnVehicleStreamOut
-	forward Iter_OnVehicleStreamOut(vehicleid, forplayerid);
 #endif
 
 /*
---------------------------------------------------------------------------------
 	VEHICLES STREAM ENDS
----------------------------------------------------------------------------------
 */
 
-#endif
-
 /*
---------------------------------------------------------------------------------
 	ACTORS STREAM
----------------------------------------------------------------------------------
 */
 
-#if FOREACH_ACTORSSTREAM_ITERATOR
+#if FOREACH_I_PlayerActorsStream || FOREACH_I_ActorPlayersStream
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnActorStreamIn
-Params:
-	actorid
-	forplayerid
-Return:
-	-
-Notes:
-	-
---------------------------------------------------------------------------------
-*/
+	/*
+		Iter_OnActorStreamIn
+	*/
 
-public OnActorStreamIn(actorid, forplayerid)
-{
-	Iter_Add(ActorsStream[forplayerid], actorid);
+	public OnActorStreamIn(actorid, forplayerid)
+	{
+		#if FOREACH_I_PlayerActorsStream
+			Iter_Add(PlayerActorsStream[forplayerid], actorid);
+		#endif
 
+		#if FOREACH_I_ActorPlayersStream
+			Iter_Add(ActorPlayersStream[actorid], forplayerid);
+		#endif
+
+		#if defined Iter_OnActorStreamIn
+			return Iter_OnActorStreamIn(actorid, forplayerid);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnActorStreamIn
+		#undef OnActorStreamIn
+	#else
+		#define _ALS_OnActorStreamIn
+	#endif
+
+	#define OnActorStreamIn Iter_OnActorStreamIn
 	#if defined Iter_OnActorStreamIn
-		return Iter_OnActorStreamIn(actorid, forplayerid);
-	#else
-		return 1;
+		forward Iter_OnActorStreamIn(actorid, forplayerid);
 	#endif
-}
-#if defined _ALS_OnActorStreamIn
-	#undef OnActorStreamIn
-#else
-	#define _ALS_OnActorStreamIn
-#endif
 
-#define OnActorStreamIn Iter_OnActorStreamIn
-#if defined Iter_OnActorStreamIn
-	forward Iter_OnActorStreamIn(actorid, forplayerid);
-#endif
+	/*
+		Iter_OnActorStreamOut
+	*/
 
-/*
---------------------------------------------------------------------------------
-Function:
-	Iter_OnActorStreamOut
-Params:
-	actorid
-	forplayerid
-Return:
-	-
-Notes:
-	-
---------------------------------------------------------------------------------
-*/
+	public OnActorStreamOut(actorid, forplayerid)
+	{
+		#if FOREACH_I_PlayerActorsStream
+			Iter_Remove(PlayerActorsStream[forplayerid], actorid);
+		#endif
 
-public OnActorStreamOut(actorid, forplayerid)
-{
-	Iter_Remove(ActorsStream[forplayerid], actorid);
+		#if FOREACH_I_ActorPlayersStream
+			Iter_Remove(ActorPlayersStream[actorid], forplayerid);
+		#endif
 
+		#if defined Iter_OnActorStreamOut
+			return Iter_OnActorStreamOut(actorid, forplayerid);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnActorStreamOut
+		#undef OnActorStreamOut
+	#else
+		#define _ALS_OnActorStreamOut
+	#endif
+
+	#define OnActorStreamOut Iter_OnActorStreamOut
 	#if defined Iter_OnActorStreamOut
-		return Iter_OnActorStreamOut(actorid, forplayerid);
-	#else
-		return 1;
+		forward Iter_OnActorStreamOut(actorid, forplayerid);
 	#endif
-}
-#if defined _ALS_OnActorStreamOut
-	#undef OnActorStreamOut
-#else
-	#define _ALS_OnActorStreamOut
-#endif
 
-#define OnActorStreamOut Iter_OnActorStreamOut
-#if defined Iter_OnActorStreamOut
-	forward Iter_OnActorStreamOut(actorid, forplayerid);
 #endif
 
 /*
---------------------------------------------------------------------------------
 	ACTORS STREAM ENDS
----------------------------------------------------------------------------------
 */
-
-#endif
 
 /*
 --------------------------------------------------------------------------------
