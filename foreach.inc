@@ -916,6 +916,18 @@ public OnGameModeInit()
 		#if FOREACH_I_Character
 			Iter_Remove(Character, playerid);
 		#endif
+
+		#if FOREACH_I_PlayerPlayersStream
+			Iter_Clear(PlayerPlayersStream[playerid]);
+		#endif
+
+		#if FOREACH_I_PlayerVehiclesStream
+			Iter_Clear(PlayerVehiclesStream[playerid]);
+		#endif
+
+		#if FOREACH_I_PlayerActorsStream
+			Iter_Clear(PlayerActorsStream[playerid]);
+		#endif
 	}
 
 #endif
