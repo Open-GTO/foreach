@@ -637,15 +637,15 @@ public OnGameModeInit()
 	#endif
 
 	#if FOREACH_I_Player || FOREACH_I_Bot || FOREACH_I_Character
-		#if defined FOREACH_I_Player
+		#if FOREACH_I_Player
 			Iter_Clear(Player);
 		#endif
 
-		#if defined FOREACH_I_Bot
+		#if FOREACH_I_Bot
 			Iter_Clear(Bot);
 		#endif
 
-		#if defined FOREACH_I_Character
+		#if FOREACH_I_Character
 			Iter_Clear(Character);
 		#endif
 
@@ -655,16 +655,16 @@ public OnGameModeInit()
 			}
 
 			if (!IsPlayerNPC(playerid)) {
-				#if defined FOREACH_I_Player
+				#if FOREACH_I_Player
 					Iter_Add(Player, playerid);
 				#endif
 			} else {
-				#if defined FOREACH_I_Bot
+				#if FOREACH_I_Bot
 					Iter_Add(Bot, playerid);
 				#endif
 			}
 
-			#if defined FOREACH_I_Character
+			#if FOREACH_I_Character
 				Iter_Add(Character, playerid);
 			#endif
 		}
@@ -771,6 +771,8 @@ public OnGameModeInit()
 			}
 		}
 	#endif
+
+	#pragma unused LAST_PLAYER_ID, LAST_VEHICLE_ID, LAST_ACTOR_ID
 
 	#if defined Iter_OnGameModeInit
 		return Iter_OnGameModeInit();
