@@ -1,0 +1,9 @@
+{
+	"user": "ziggi",
+	"repo": "foreach",
+	"entry": "test.pwn",
+	"output": "test.amx",
+	"dependencies": [
+		"sampctl/samp-stdlib"
+	]
+}
