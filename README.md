@@ -10,8 +10,9 @@ This fork based on [that fork](https://github.com/karimcambridge/SAMP-foreach).
 - Actor and Vehicle iterators.
 - Multiscripts supported by FOREACH_MULTISCRIPT.
 - Optimized ALS hooking process (without CallLocalFunction).
-- Removed FOREACH_NO_BOTS option (now you can not disable NPC's support).
+- Changed iterator enable/disable defines.
 - Removed npcmodes/ scripts support.
+- New functions: Iter_Index
 
 # How to install
 If you use foreach only in gamemode, just include foreach like this:

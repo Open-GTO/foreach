@@ -478,6 +478,24 @@ native Iter_Clear(IteratorArray:Name[]<>);
 
 /*
 --------------------------------------------------------------------------------
+Function:
+	Iter_Index
+Params:
+	iter - Name of the iterator empty.
+	value - Value of the iterator element.
+Return:
+	-
+Notes:
+	Wrapper for Iter_IndexInternal.
+
+native Iter_Index(IteratorArray:Name[]<>, index);
+--------------------------------------------------------------------------------
+*/
+
+#define Iter_Index(%1,%2) Iter_IndexInternal(_Y_ITER_ARRAY:%1@YSII_Cg,_Y_ITER_ARRAY:%1@YSII_Ag,_Y_ITER_ARRAY_SIZE(%1),_Y_ITER_ARRAY_SIZE(%1),%2)
+
+/*
+--------------------------------------------------------------------------------
 	Create the internal iterators.
 --------------------------------------------------------------------------------
 */
@@ -1602,6 +1620,39 @@ stock Iter_ClearInternal(&count, array[], size)
 	}
 	array[size] = size;
 	count = 0;
+}
+
+/*-------------------------------------------------------------------------*//**
+ * <param name="count">Number of items in the iterator.</param>
+ * <param name="array">iterator data.</param>
+ * <param name="start">Array start index.</param>
+ * <param name="size">Array size.</param>
+ * <param name="index">Index to find Nth value.</param>
+ * <param name="wrap">Keep going around until a value is found?</param>
+ * <remarks>
+ *  Allows you to find the Nth value in the iterator.  DO NOT call this in a
+ *  loop to get all values - that totally defeats the purpose of "foreach", just
+ *  use a normal "foreach" loop with an index counter for that case.
+ * </remarks>
+ *//*------------------------------------------------------------------------**/
+
+stock Iter_IndexInternal(count, array[], start, size, index)
+{
+	// If there are no elements in the iterator, we can't ever return the Nth
+	// item.  Also if the parameters are invalid.
+	if (index < 0 || start < size || array[start] >= size) {
+		return ITER_NONE;
+	}
+	// We could wrap around in the loop (it would work), but it is better to set
+	// the limit first.
+	if (index >= count) {
+		return ITER_NONE;
+	}
+	start = array[start];
+	while (index--) {
+		start = array[start];
+	}
+	return start;
 }
 
 /*
