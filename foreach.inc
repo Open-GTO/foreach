@@ -1437,7 +1437,7 @@ Notes:
 --------------------------------------------------------------------------------
 */
 
-stock Iter_RandomInternal(count, array[], size)
+stock Iter_RandomInternal(count, const array[], size)
 {
 	if (count == 0) {
 		return ITER_NONE;
@@ -1472,7 +1472,7 @@ Notes:
 --------------------------------------------------------------------------------
 */
 
-stock Iter_FreeInternal(array[], size)
+stock Iter_FreeInternal(const array[], size)
 {
 	for (new i = 0; i != size; ++i) {
 		if (array[i] > size) {
@@ -1593,7 +1593,7 @@ Notes:
 --------------------------------------------------------------------------------
 */
 
-stock Iter_ContainsInternal(array[], value, size)
+stock Iter_ContainsInternal(const array[], value, size)
 {
 	return 0 <= value < size && array[value] <= size;
 }
@@ -1636,7 +1636,7 @@ stock Iter_ClearInternal(&count, array[], size)
  * </remarks>
  *//*------------------------------------------------------------------------**/
 
-stock Iter_IndexInternal(count, array[], start, size, index)
+stock Iter_IndexInternal(count, const array[], start, size, index)
 {
 	// If there are no elements in the iterator, we can't ever return the Nth
 	// item.  Also if the parameters are invalid.
@@ -1696,7 +1696,7 @@ Notes:
 --------------------------------------------------------------------------------
 */
 
-stock Iter_PrevInternal(array[], size, slot)
+stock Iter_PrevInternal(const array[], size, slot)
 {
 	if (0 <= slot <= size && array[slot] <= size) {
 		for (new last = slot; last--; ) {
