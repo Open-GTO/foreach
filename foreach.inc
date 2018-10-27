@@ -997,25 +997,11 @@ public OnGameModeInit()
 
 	public OnPlayerStateChange(playerid, newstate, oldstate)
 	{
-		if (newstate == PLAYER_STATE_DRIVER) {
-			new
-				vehicleid = GetPlayerVehicleID(playerid);
-			Iter_Add(PlayerInVehicle[vehicleid], playerid);
+		if (newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER) {
+			Iter_Add(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
 		}
-		else if (oldstate == PLAYER_STATE_DRIVER) {
-			new
-				vehicleid = GetPlayerVehicleID(playerid);
-			Iter_Remove(PlayerInVehicle[vehicleid], playerid);
-		}
-		else if (newstate == PLAYER_STATE_PASSENGER) {
-			new
-				vehicleid = GetPlayerVehicleID(playerid);
-			Iter_Add(PlayerInVehicle[vehicleid], playerid);
-		}
-		else if (oldstate == PLAYER_STATE_PASSENGER) {
-			new
-				vehicleid = GetPlayerVehicleID(playerid);
-			Iter_Remove(PlayerInVehicle[vehicleid], playerid);
+		else if (oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER) {
+			Iter_Remove(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
 		}
 		#if defined Iter_OnPlayerStateChange
 			return Iter_OnPlayerStateChange(playerid, newstate, oldstate);
