@@ -280,6 +280,13 @@ forward Iter_OPDCInternal(playerid);
 	#define FOREACH_I_ActorPlayersStream 1
 #endif
 
+#if !defined FOREACH_I_PlayerInVehicle
+	#define FOREACH_I_PlayerInVehicle 0
+#else
+	#undef FOREACH_I_PlayerInVehicle
+	#define FOREACH_I_PlayerInVehicle 1
+#endif
+
 #if defined FOREACH_MULTISCRIPT
 	#if FOREACH_I_Vehicle
 		forward Iter_AddVehicle(vehicleid);
@@ -543,6 +550,10 @@ native Iter_Index(IteratorArray:Name[]<>, index);
 	new Iterator:ActorPlayersStream[MAX_ACTORS]<MAX_PLAYERS>;
 #endif
 
+#if FOREACH_I_PlayerInVehicle
+	new Iterator:PlayerInVehicle[MAX_VEHICLES]<9>;
+#endif
+
 /*
 --------------------------------------------------------------------------------
 Function:
@@ -789,6 +800,24 @@ public OnGameModeInit()
 			}
 		}
 	#endif
+	
+	#if FOREACH_I_PlayerInVehicle
+		Iter_Init(PlayerInVehicle);
+
+		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+			if (!IsPlayerConnected(playerid)) {
+				continue;
+			}
+
+			for (new vehicleid = 1; vehicleid != LAST_VEHICLE_ID; ++vehicleid) {
+				if (!IsPlayerInVehicle(playerid, vehicleid)) {
+					continue;
+				}
+
+				Iter_Add(PlayerInVehicle[vehicleid], playerid);
+			}
+		}
+	#endif
 
 	#pragma unused LAST_PLAYER_ID, LAST_VEHICLE_ID, LAST_ACTOR_ID
 
@@ -954,6 +983,61 @@ public OnGameModeInit()
 
 /*
 	CHARACTERS ENDS
+*/
+
+/*
+	PLAYERS IN VEHECLE
+*/
+
+#if FOREACH_I_PlayerInVehicle
+
+	/*
+		Iter_OnPlayerStateChange
+	*/
+
+	public OnPlayerStateChange(playerid, newstate, oldstate)
+	{
+		if (newstate == PLAYER_STATE_DRIVER) {
+			new
+				vehicleid = GetPlayerVehicleID(playerid);
+			Iter_Add(PlayerInVehicle[vehicleid], playerid);
+		}
+		else if (oldstate == PLAYER_STATE_DRIVER) {
+			new
+				vehicleid = GetPlayerVehicleID(playerid);
+			Iter_Remove(PlayerInVehicle[vehicleid], playerid);
+		}
+		else if (newstate == PLAYER_STATE_PASSENGER) {
+			new
+				vehicleid = GetPlayerVehicleID(playerid);
+			Iter_Add(PlayerInVehicle[vehicleid], playerid);
+		}
+		else if (oldstate == PLAYER_STATE_PASSENGER) {
+			new
+				vehicleid = GetPlayerVehicleID(playerid);
+			Iter_Remove(PlayerInVehicle[vehicleid], playerid);
+		}
+		#if defined Iter_OnPlayerStateChange
+			return Iter_OnPlayerStateChange(playerid, newstate, oldstate);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnPlayerStateChange
+		#undef OnPlayerStateChange
+	#else
+		#define _ALS_OnPlayerStateChange
+	#endif
+
+	#define OnPlayerStateChange Iter_OnPlayerStateChange
+	#if defined Iter_OnPlayerStateChange
+		forward Iter_OnPlayerStateChange(playerid, newstate, oldstate);
+	#endif
+
+#endif
+
+/*
+	PLAYERS IN VEHECLE ENDS
 */
 
 /*
