@@ -227,6 +227,9 @@ forward Iter_OPDCInternal(playerid);
 
 static
 	bool:Iter_gIsFilterscript = false;
+	
+static
+	Get_Player_Id[MAX_PLAYERS] = {INVALID_VEHICLE_ID, ...};
 
 #if !defined FOREACH_I_Player
 	#define FOREACH_I_Player 1
@@ -982,6 +985,13 @@ stock Iter_ScriptInit()
 		#if FOREACH_I_Character
 			Iter_Remove(Character, playerid);
 		#endif
+		
+		#if FOREACH_I_PlayerInVehicle
+			if (Get_Player_Id[playerid] != INVALID_VEHICLE_ID) {
+				Iter_Remove(PlayerInVehicle[Get_Player_Id[playerid]], playerid);
+				Get_Player_Id[playerid] = INVALID_VEHICLE_ID;
+			}
+		#endif
 
 		#if FOREACH_I_PlayerPlayersStream
 			Iter_Clear(PlayerPlayersStream[playerid]);
@@ -1481,10 +1491,14 @@ stock Iter_ScriptInit()
 	public OnPlayerStateChange(playerid, newstate, oldstate)
 	{
 		if (newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER) {
-			Iter_Add(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
+			Get_Player_Id[playerid] = GetPlayerVehicleID(playerid);
+			Iter_Add(PlayerInVehicle[Get_Player_Id[playerid]], playerid);
 		}
 		else if (oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER) {
-			Iter_Remove(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
+			if (Get_Player_Id[playerid] != INVALID_VEHICLE_ID) {
+				Iter_Remove(PlayerInVehicle[Get_Player_Id[playerid]], playerid);
+				Get_Player_Id[playerid] = INVALID_VEHICLE_ID;
+			}
 		}
 		#if defined Iter_OnPlayerStateChange
 			return Iter_OnPlayerStateChange(playerid, newstate, oldstate);
