@@ -551,7 +551,7 @@ native Iter_Index(IteratorArray:Name[]<>, index);
 #endif
 
 #if FOREACH_I_PlayerInVehicle
-	new Iterator:PlayerInVehicle[MAX_VEHICLES]<9>;
+	new Iterator:PlayerInVehicle[MAX_VEHICLES]<MAX_PLAYERS>;
 #endif
 
 /*
@@ -983,47 +983,6 @@ public OnGameModeInit()
 
 /*
 	CHARACTERS ENDS
-*/
-
-/*
-	PLAYERS IN VEHECLE
-*/
-
-#if FOREACH_I_PlayerInVehicle
-
-	/*
-		Iter_OnPlayerStateChange
-	*/
-
-	public OnPlayerStateChange(playerid, newstate, oldstate)
-	{
-		if (newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER) {
-			Iter_Add(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
-		}
-		else if (oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER) {
-			Iter_Remove(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
-		}
-		#if defined Iter_OnPlayerStateChange
-			return Iter_OnPlayerStateChange(playerid, newstate, oldstate);
-		#else
-			return 1;
-		#endif
-	}
-	#if defined _ALS_OnPlayerStateChange
-		#undef OnPlayerStateChange
-	#else
-		#define _ALS_OnPlayerStateChange
-	#endif
-
-	#define OnPlayerStateChange Iter_OnPlayerStateChange
-	#if defined Iter_OnPlayerStateChange
-		forward Iter_OnPlayerStateChange(playerid, newstate, oldstate);
-	#endif
-
-#endif
-
-/*
-	PLAYERS IN VEHECLE ENDS
 */
 
 /*
@@ -1490,6 +1449,47 @@ public OnGameModeInit()
 
 /*
 	ACTORS STREAM ENDS
+*/
+
+/*
+	PLAYERS IN VEHECLE
+*/
+
+#if FOREACH_I_PlayerInVehicle
+
+	/*
+		Iter_OnPlayerStateChange
+	*/
+
+	public OnPlayerStateChange(playerid, newstate, oldstate)
+	{
+		if (newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER) {
+			Iter_Add(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
+		}
+		else if (oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER) {
+			Iter_Remove(PlayerInVehicle[GetPlayerVehicleID(playerid)], playerid);
+		}
+		#if defined Iter_OnPlayerStateChange
+			return Iter_OnPlayerStateChange(playerid, newstate, oldstate);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnPlayerStateChange
+		#undef OnPlayerStateChange
+	#else
+		#define _ALS_OnPlayerStateChange
+	#endif
+
+	#define OnPlayerStateChange Iter_OnPlayerStateChange
+	#if defined Iter_OnPlayerStateChange
+		forward Iter_OnPlayerStateChange(playerid, newstate, oldstate);
+	#endif
+
+#endif
+
+/*
+	PLAYERS IN VEHECLE ENDS
 */
 
 /*
