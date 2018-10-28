@@ -51,6 +51,7 @@ FOREACH_I_PlayerVehiclesStream | PlayerVehiclesStream[playerid] | no
 FOREACH_I_VehiclePlayersStream | VehiclePlayersStream[vehicleid] | no
 FOREACH_I_PlayerActorsStream | PlayerActorsStream[playerid] | no
 FOREACH_I_ActorPlayersStream | ActorPlayersStream[actorid] | no
+FOREACH_I_PlayerInVehicle | PlayerInVehicle[vehicle] | no
 
 How to disable any iterator:
 ```Pawn

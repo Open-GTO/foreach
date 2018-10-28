@@ -225,6 +225,9 @@ forward Iter_RemoveInternal(&count, array[], value, size);
 forward Iter_ClearInternal(&count, array[], size);
 forward Iter_OPDCInternal(playerid);
 
+static
+	bool:Iter_gIsFilterscript = false;
+
 #if !defined FOREACH_I_Player
 	#define FOREACH_I_Player 1
 #endif
@@ -611,29 +614,26 @@ Notes:
 --------------------------------------------------------------------------------
 */
 
-#if defined FILTERSCRIPT
+public OnFilterScriptInit()
+{
+	Iter_gIsFilterscript = true;
+	Iter_ScriptInit();
 
-	public OnFilterScriptInit()
-	{
-		OnGameModeInit();
-
-		#if defined Iter_OnFilterScriptInit
-			return Iter_OnFilterScriptInit();
-		#else
-			return 1;
-		#endif
-	}
-	#if defined _ALS_OnFilterScriptInit
-		#undef OnFilterScriptInit
-	#else
-		#define _ALS_OnFilterScriptInit
-	#endif
-
-	#define OnFilterScriptInit Iter_OnFilterScriptInit
 	#if defined Iter_OnFilterScriptInit
-		forward Iter_OnFilterScriptInit();
+		return Iter_OnFilterScriptInit();
+	#else
+		return 1;
 	#endif
+}
+#if defined _ALS_OnFilterScriptInit
+	#undef OnFilterScriptInit
+#else
+	#define _ALS_OnFilterScriptInit
+#endif
 
+#define OnFilterScriptInit Iter_OnFilterScriptInit
+#if defined Iter_OnFilterScriptInit
+	forward Iter_OnFilterScriptInit();
 #endif
 
 /*
@@ -645,14 +645,47 @@ Params:
 Return:
 	-
 Notes:
-	There are WIERD bugs in this script, seemingly caused by the compiler, so
-	this hopefully fixes them. The OnGameModeInit code is written to be
-	very fast by utilising the internal array structure instead of the regular
-	Add functions.
+	-
 --------------------------------------------------------------------------------
 */
 
 public OnGameModeInit()
+{
+	if (!Iter_gIsFilterscript) {
+		Iter_ScriptInit();
+	}
+
+	#if defined Iter_OnGameModeInit
+		return Iter_OnGameModeInit();
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnGameModeInit
+	#undef OnGameModeInit
+#else
+	#define _ALS_OnGameModeInit
+#endif
+
+#define OnGameModeInit Iter_OnGameModeInit
+#if defined Iter_OnGameModeInit
+	forward Iter_OnGameModeInit();
+#endif
+
+/*
+--------------------------------------------------------------------------------
+Function:
+	Iter_ScriptInit
+Params:
+	-
+Return:
+	-
+Notes:
+	-
+--------------------------------------------------------------------------------
+*/
+
+stock Iter_ScriptInit()
 {
 	#if defined GetPlayerPoolSize
 		new
@@ -820,23 +853,7 @@ public OnGameModeInit()
 	#endif
 
 	#pragma unused LAST_PLAYER_ID, LAST_VEHICLE_ID, LAST_ACTOR_ID
-
-	#if defined Iter_OnGameModeInit
-		return Iter_OnGameModeInit();
-	#else
-		return 1;
-	#endif
 }
-#if defined _ALS_OnGameModeInit
-	#undef OnGameModeInit
-#else
-	#define _ALS_OnGameModeInit
-#endif
-
-#define OnGameModeInit Iter_OnGameModeInit
-#if defined Iter_OnGameModeInit
-	forward Iter_OnGameModeInit();
-#endif
 
 /*
 	CHARACTERS
