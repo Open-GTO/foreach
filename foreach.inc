@@ -226,10 +226,8 @@ forward Iter_ClearInternal(&count, array[], size);
 forward Iter_OPDCInternal(playerid);
 
 static
-	bool:Iter_gIsFilterscript = false;
-	
-static
-	Get_Player_Id[MAX_PLAYERS] = {INVALID_VEHICLE_ID, ...};
+	bool:Iter_gIsFilterscript = false,
+	Iter_gPlayerVehicleId[MAX_PLAYERS] = {INVALID_VEHICLE_ID, ...};
 
 #if !defined FOREACH_I_Player
 	#define FOREACH_I_Player 1
@@ -987,9 +985,9 @@ stock Iter_ScriptInit()
 		#endif
 		
 		#if FOREACH_I_PlayerInVehicle
-			if (Get_Player_Id[playerid] != INVALID_VEHICLE_ID) {
-				Iter_Remove(PlayerInVehicle[Get_Player_Id[playerid]], playerid);
-				Get_Player_Id[playerid] = INVALID_VEHICLE_ID;
+			if (Iter_gPlayerVehicleId[playerid] != INVALID_VEHICLE_ID) {
+				Iter_Remove(PlayerInVehicle[Iter_gPlayerVehicleId[playerid]], playerid);
+				Iter_gPlayerVehicleId[playerid] = INVALID_VEHICLE_ID;
 			}
 		#endif
 
@@ -1479,7 +1477,7 @@ stock Iter_ScriptInit()
 */
 
 /*
-	PLAYERS IN VEHECLE
+	PLAYERS IN VEHICLE
 */
 
 #if FOREACH_I_PlayerInVehicle
@@ -1491,15 +1489,15 @@ stock Iter_ScriptInit()
 	public OnPlayerStateChange(playerid, newstate, oldstate)
 	{
 		if (newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER) {
-			Get_Player_Id[playerid] = GetPlayerVehicleID(playerid);
-			Iter_Add(PlayerInVehicle[Get_Player_Id[playerid]], playerid);
-		}
-		else if (oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER) {
-			if (Get_Player_Id[playerid] != INVALID_VEHICLE_ID) {
-				Iter_Remove(PlayerInVehicle[Get_Player_Id[playerid]], playerid);
-				Get_Player_Id[playerid] = INVALID_VEHICLE_ID;
+			Iter_gPlayerVehicleId[playerid] = GetPlayerVehicleID(playerid);
+			Iter_Add(PlayerInVehicle[Iter_gPlayerVehicleId[playerid]], playerid);
+		} else if (oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER) {
+			if (Iter_gPlayerVehicleId[playerid] != INVALID_VEHICLE_ID) {
+				Iter_Remove(PlayerInVehicle[Iter_gPlayerVehicleId[playerid]], playerid);
+				Iter_gPlayerVehicleId[playerid] = INVALID_VEHICLE_ID;
 			}
 		}
+
 		#if defined Iter_OnPlayerStateChange
 			return Iter_OnPlayerStateChange(playerid, newstate, oldstate);
 		#else
