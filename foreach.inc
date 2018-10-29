@@ -226,8 +226,7 @@ forward Iter_ClearInternal(&count, array[], size);
 forward Iter_OPDCInternal(playerid);
 
 static
-	bool:Iter_gIsFilterscript = false,
-	Iter_gPlayerVehicleId[MAX_PLAYERS] = {INVALID_VEHICLE_ID, ...};
+	bool:Iter_gIsFilterscript = false;
 
 #if !defined FOREACH_I_Player
 	#define FOREACH_I_Player 1
@@ -556,6 +555,7 @@ native Iter_Index(IteratorArray:Name[]<>, index);
 
 #if FOREACH_I_PlayerInVehicle
 	new Iterator:PlayerInVehicle[MAX_VEHICLES]<MAX_PLAYERS>;
+	static Iter_gPlayerVehicleId[MAX_PLAYERS] = {INVALID_VEHICLE_ID, ...};
 #endif
 
 /*
