@@ -1025,7 +1025,7 @@ stock Iter_ScriptInit()
 		new
 			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, addsiren);
 
-		if (ret != INVALID_VEHICLE_ID) {
+		if (ret != INVALID_VEHICLE_ID && ret != 0) {
 			#if defined FOREACH_MULTISCRIPT
 				CallRemoteFunction("Iter_AddVehicle", "i", ret);
 			#else
