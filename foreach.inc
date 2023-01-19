@@ -688,7 +688,7 @@ Notes:
 
 stock Iter_ScriptInit()
 {
-	#if defined _INC_open_mp
+	#if defined _INC_open_mp || defined _inc_fixes
 		new
 			LAST_PLAYER_ID = MAX_PLAYERS,
 			LAST_VEHICLE_ID = MAX_VEHICLES,
