@@ -688,15 +688,16 @@ Notes:
 
 stock Iter_ScriptInit()
 {
-	#if defined GetPlayerPoolSize
+	#if defined GetPlayerPoolSize && !defined _INC_open_mp && !defined _inc_fixes
 		new
 			LAST_PLAYER_ID = GetPlayerPoolSize() + 1,
 			LAST_VEHICLE_ID = GetVehiclePoolSize() + 1,
 			LAST_ACTOR_ID = GetActorPoolSize() + 1;
 	#else
-		#define LAST_PLAYER_ID  MAX_PLAYERS
-		#define LAST_VEHICLE_ID MAX_VEHICLES
-		#define LAST_ACTOR_ID   MAX_ACTORS
+		new
+			LAST_PLAYER_ID = MAX_PLAYERS,
+			LAST_VEHICLE_ID = MAX_VEHICLES,
+			LAST_ACTOR_ID = MAX_ACTORS;
 	#endif
 
 	#if FOREACH_I_Player || FOREACH_I_Bot || FOREACH_I_Character
