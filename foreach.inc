@@ -1021,7 +1021,7 @@ stock Iter_ScriptInit()
 		Iter_CreateVehicle
 	*/
 
-	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
+	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, bool: addsiren = false)
 	{
 		new
 			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, addsiren);
