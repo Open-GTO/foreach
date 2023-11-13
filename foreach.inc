@@ -1021,7 +1021,11 @@ stock Iter_ScriptInit()
 		Iter_CreateVehicle
 	*/
 
+#if defined _INC_open_mp
 	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, bool: addsiren = false)
+#else
+	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
+#endif
 	{
 		new
 			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, addsiren);
@@ -1075,7 +1079,10 @@ stock Iter_ScriptInit()
 		Iter_AddStaticVehicleEx
 	*/
 
+#if defined _INC_open_mp
 	stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, bool:addsiren = false)
+#else
+	stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
 	{
 		new
 			ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, addsiren);
