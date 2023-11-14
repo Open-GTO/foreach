@@ -1022,7 +1022,7 @@ stock Iter_ScriptInit()
 	*/
 
 #if defined _INC_open_mp
-	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, bool: addsiren = false)
+	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, bool:addsiren = false)
 #else
 	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
 #endif
