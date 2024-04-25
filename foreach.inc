@@ -835,7 +835,7 @@ stock Iter_ScriptInit()
 			}
 		}
 	#endif
-	
+
 	#if FOREACH_I_PlayerInVehicle
 		Iter_Init(PlayerInVehicle);
 
@@ -984,7 +984,7 @@ stock Iter_ScriptInit()
 		#if FOREACH_I_Character
 			Iter_Remove(Character, playerid);
 		#endif
-		
+
 		#if FOREACH_I_PlayerInVehicle
 			if (Iter_gPlayerVehicleId[playerid] != INVALID_VEHICLE_ID) {
 				Iter_Remove(PlayerInVehicle[Iter_gPlayerVehicleId[playerid]], playerid);
