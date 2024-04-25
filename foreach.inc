@@ -688,18 +688,6 @@ Notes:
 
 stock Iter_ScriptInit()
 {
-	#if defined GetPlayerPoolSize && !defined _INC_open_mp && !defined _inc_fixes
-		new
-			LAST_PLAYER_ID = GetPlayerPoolSize() + 1,
-			LAST_VEHICLE_ID = GetVehiclePoolSize() + 1,
-			LAST_ACTOR_ID = GetActorPoolSize() + 1;
-	#else
-		new
-			LAST_PLAYER_ID = MAX_PLAYERS,
-			LAST_VEHICLE_ID = MAX_VEHICLES,
-			LAST_ACTOR_ID = MAX_ACTORS;
-	#endif
-
 	#if FOREACH_I_Player || FOREACH_I_Bot || FOREACH_I_Character
 		#if FOREACH_I_Player
 			Iter_Clear(Player);
@@ -713,7 +701,7 @@ stock Iter_ScriptInit()
 			Iter_Clear(Character);
 		#endif
 
-		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+		for (new playerid = 0; playerid != MAX_PLAYERS; ++playerid) {
 			if (!IsPlayerConnected(playerid)) {
 				continue;
 			}
@@ -737,7 +725,7 @@ stock Iter_ScriptInit()
 	#if FOREACH_I_Vehicle
 		Iter_Clear(Vehicle);
 
-		for (new vehicleid = 1; vehicleid != LAST_VEHICLE_ID; ++vehicleid) {
+		for (new vehicleid = 1; vehicleid != MAX_VEHICLES; ++vehicleid) {
 			if (!GetVehicleModel(vehicleid)) {
 				continue;
 			}
@@ -749,7 +737,7 @@ stock Iter_ScriptInit()
 	#if FOREACH_I_Actor
 		Iter_Clear(Actor);
 
-		for (new actorid = 0; actorid != LAST_ACTOR_ID; ++actorid) {
+		for (new actorid = 0; actorid != MAX_ACTORS; ++actorid) {
 			if (!IsValidActor(actorid)) {
 				continue;
 			}
@@ -761,12 +749,12 @@ stock Iter_ScriptInit()
 	#if FOREACH_I_PlayerPlayersStream
 		Iter_Init(PlayerPlayersStream);
 
-		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+		for (new playerid = 0; playerid != MAX_PLAYERS; ++playerid) {
 			if (!IsPlayerConnected(playerid)) {
 				continue;
 			}
 
-			for (new targetid = 0; targetid != LAST_PLAYER_ID; ++targetid) {
+			for (new targetid = 0; targetid != MAX_PLAYERS; ++targetid) {
 				if (!IsPlayerStreamedIn(playerid, targetid)) {
 					continue;
 				}
@@ -785,12 +773,12 @@ stock Iter_ScriptInit()
 			Iter_Init(VehiclePlayersStream);
 		#endif
 
-		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+		for (new playerid = 0; playerid != MAX_PLAYERS; ++playerid) {
 			if (!IsPlayerConnected(playerid)) {
 				continue;
 			}
 
-			for (new vehicleid = 1; vehicleid != LAST_VEHICLE_ID; ++vehicleid) {
+			for (new vehicleid = 1; vehicleid != MAX_VEHICLES; ++vehicleid) {
 				if (!IsVehicleStreamedIn(vehicleid, playerid)) {
 					continue;
 				}
@@ -815,12 +803,12 @@ stock Iter_ScriptInit()
 			Iter_Init(ActorPlayersStream);
 		#endif
 
-		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+		for (new playerid = 0; playerid != MAX_PLAYERS; ++playerid) {
 			if (!IsPlayerConnected(playerid)) {
 				continue;
 			}
 
-			for (new actorid = 0; actorid != LAST_ACTOR_ID; ++actorid) {
+			for (new actorid = 0; actorid != MAX_ACTORS; ++actorid) {
 				if (!IsActorStreamedIn(actorid, playerid)) {
 					continue;
 				}
@@ -839,12 +827,12 @@ stock Iter_ScriptInit()
 	#if FOREACH_I_PlayerInVehicle
 		Iter_Init(PlayerInVehicle);
 
-		for (new playerid = 0; playerid != LAST_PLAYER_ID; ++playerid) {
+		for (new playerid = 0; playerid != MAX_PLAYERS; ++playerid) {
 			if (!IsPlayerConnected(playerid)) {
 				continue;
 			}
 
-			for (new vehicleid = 1; vehicleid != LAST_VEHICLE_ID; ++vehicleid) {
+			for (new vehicleid = 1; vehicleid != MAX_VEHICLES; ++vehicleid) {
 				if (!IsPlayerInVehicle(playerid, vehicleid)) {
 					continue;
 				}
@@ -853,8 +841,6 @@ stock Iter_ScriptInit()
 			}
 		}
 	#endif
-
-	#pragma unused LAST_PLAYER_ID, LAST_VEHICLE_ID, LAST_ACTOR_ID
 }
 
 /*
@@ -1021,14 +1007,10 @@ stock Iter_ScriptInit()
 		Iter_CreateVehicle
 	*/
 
-#if defined _INC_open_mp
-	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, bool:addsiren = false)
-#else
 	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
-#endif
 	{
 		new
-			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, addsiren);
+			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, !!addsiren);
 
 		if (ret != INVALID_VEHICLE_ID && ret != 0) {
 			#if defined FOREACH_MULTISCRIPT
@@ -1079,14 +1061,10 @@ stock Iter_ScriptInit()
 		Iter_AddStaticVehicleEx
 	*/
 
-#if defined _INC_open_mp
-	stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, bool:addsiren = false)
-#else
 	stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
-#endif
 	{
 		new
-			ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, addsiren);
+			ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, !!addsiren);
 
 		if (ret != INVALID_VEHICLE_ID) {
 			#if defined FOREACH_MULTISCRIPT
