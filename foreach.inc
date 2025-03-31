@@ -1090,13 +1090,16 @@ stock Iter_ScriptInit()
 
 	stock DestroyVehicleSafe(&vehicleid)
 	{
-		new success = DestroyVehicle(vehicleid);
+		new
+			ret = DestroyVehicle(vehicleid);
+
 		#if defined FOREACH_MULTISCRIPT
 			vehicleid = CallRemoteFunction("Iter_RemoveVehicle", "i", vehicleid);
 		#else
 			Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
 		#endif
-		return success;
+
+		return ret;
 	}
 
 	/*
@@ -1110,6 +1113,7 @@ stock Iter_ScriptInit()
 		#else
 			Iter_Remove(Vehicle, vehicleid);
 		#endif
+
 		return DestroyVehicle(vehicleid);
 	}
 	#if defined _ALS_DestroyVehicle
@@ -1167,6 +1171,7 @@ stock Iter_ScriptInit()
 	{
 		new
 			ret = CreateActor(modelid, X, Y, Z, Rotation);
+
 		if (ret != INVALID_ACTOR_ID) {
 			#if defined FOREACH_MULTISCRIPT
 				CallRemoteFunction("Iter_AddActor", "i", ret);
@@ -1174,6 +1179,7 @@ stock Iter_ScriptInit()
 				Iter_Add(Actor, ret);
 			#endif
 		}
+
 		return ret;
 	}
 	#if defined _ALS_CreateActor
@@ -1190,13 +1196,16 @@ stock Iter_ScriptInit()
 
 	stock DestroyActorSafe(&actorid)
 	{
-		new success = DestroyActor(actorid);
+		new
+			ret = DestroyActor(actorid);
+
 		#if defined FOREACH_MULTISCRIPT
 			actorid = CallRemoteFunction("Iter_RemoveActor", "i", actorid);
 		#else
 			Iter_SafeRemove(Actor, actorid, actorid);
 		#endif
-		return success;
+
+		return ret;
 	}
 
 	/*
@@ -1210,6 +1219,7 @@ stock Iter_ScriptInit()
 		#else
 			Iter_Remove(Actor, actorid);
 		#endif
+
 		return DestroyActor(actorid);
 	}
 	#if defined _ALS_DestroyActor
@@ -1473,7 +1483,11 @@ stock Iter_ScriptInit()
 		Iter_OnPlayerStateChange
 	*/
 
-	public OnPlayerStateChange(playerid, newstate, oldstate)
+	#if !defined PLAYER_STATE
+		#define PLAYER_STATE: _:
+	#endif
+
+	public OnPlayerStateChange(playerid, PLAYER_STATE:newstate, PLAYER_STATE:oldstate)
 	{
 		if (newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER) {
 			Iter_gPlayerVehicleId[playerid] = GetPlayerVehicleID(playerid);
@@ -1499,7 +1513,7 @@ stock Iter_ScriptInit()
 
 	#define OnPlayerStateChange Iter_OnPlayerStateChange
 	#if defined Iter_OnPlayerStateChange
-		forward Iter_OnPlayerStateChange(playerid, newstate, oldstate);
+		forward Iter_OnPlayerStateChange(playerid, PLAYER_STATE:newstate, PLAYER_STATE:oldstate);
 	#endif
 
 #endif
@@ -1716,7 +1730,7 @@ stock Iter_ClearInternal(&count, array[], size)
  * <param name="index">Index to find Nth value.</param>
  * <param name="wrap">Keep going around until a value is found?</param>
  * <remarks>
- *  Allows you to find the Nth value in the iterator.  DO NOT call this in a
+ *  Allows you to find the Nth value in the iterator. DO NOT call this in a
  *  loop to get all values - that totally defeats the purpose of "foreach", just
  *  use a normal "foreach" loop with an index counter for that case.
  * </remarks>
@@ -1725,7 +1739,7 @@ stock Iter_ClearInternal(&count, array[], size)
 stock Iter_IndexInternal(count, const array[], start, size, index)
 {
 	// If there are no elements in the iterator, we can't ever return the Nth
-	// item.  Also if the parameters are invalid.
+	// item. Also if the parameters are invalid.
 	if (index < 0 || start < size || array[start] >= size) {
 		return ITER_NONE;
 	}
