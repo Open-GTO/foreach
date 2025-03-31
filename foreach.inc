@@ -1009,15 +1009,8 @@ stock Iter_ScriptInit()
 
 	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
 	{
-		#if defined GetActorPos
-			new
-				ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, !!addsiren);
-		#else
-			#pragma unused addsiren
-
-			new
-				ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay);
-		#endif
+		new
+			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, !!addsiren);
 
 		if (ret != INVALID_VEHICLE_ID && ret != 0) {
 			#if defined FOREACH_MULTISCRIPT
@@ -1070,15 +1063,8 @@ stock Iter_ScriptInit()
 
 	stock Iter_AddStaticVehicleEx(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
 	{
-		#if defined GetActorPos
-			new
-				ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, !!addsiren);
-		#else
-			#pragma unused addsiren
-
-			new
-				ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay);
-		#endif
+		new
+			ret = AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, angle, color1, color2, respawn_delay, !!addsiren);
 
 		if (ret != INVALID_VEHICLE_ID) {
 			#if defined FOREACH_MULTISCRIPT
