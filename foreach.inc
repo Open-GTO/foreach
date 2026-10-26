@@ -223,7 +223,7 @@ Iterators:
 forward Iter_AddInternal(&count, array[], value, size);
 forward Iter_RemoveInternal(&count, array[], value, size);
 forward Iter_ClearInternal(&count, array[], size);
-forward Iter_OPDCInternal(playerid);
+forward Iter_OPDCInternal(playerid, isnpc);
 
 static
 	bool:Iter_gIsFilterscript = false;
@@ -923,7 +923,7 @@ stock Iter_ScriptInit()
 		Iter_OnPlayerDisconnect(playerid, reason);
 	#endif
 
-		SetTimerEx("Iter_OPDCInternal", 0, false, "i", playerid);
+		SetTimerEx("Iter_OPDCInternal", 0, false, "ii", playerid, IsPlayerNPC(playerid));
 		return 1;
 	}
 	#if defined _ALS_OnPlayerDisconnect
@@ -943,6 +943,7 @@ stock Iter_ScriptInit()
 		Iter_OPDCInternal
 	Params:
 		playerid - Player who left.
+		isnpc - NPC status saved during disconnection.
 	Return:
 		-
 	Notes:
@@ -951,13 +952,13 @@ stock Iter_ScriptInit()
 	--------------------------------------------------------------------------------
 	*/
 
-	public Iter_OPDCInternal(playerid)
+	public Iter_OPDCInternal(playerid, isnpc)
 	{
 		if (IsPlayerConnected(playerid)) {
 			return;
 		}
 
-		if (!IsPlayerNPC(playerid)) {
+		if (!isnpc) {
 			#if FOREACH_I_Player
 				Iter_Remove(Player, playerid);
 			#endif
